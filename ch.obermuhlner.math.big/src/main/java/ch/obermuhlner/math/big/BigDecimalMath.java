@@ -6,9 +6,16 @@ import static java.math.BigDecimal.ZERO;
 import static java.math.BigDecimal.valueOf;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.MathContext;
-import java.util.*;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import ch.obermuhlner.math.big.exception.UnableToFindFractionRuntimeException;
 import ch.obermuhlner.math.big.internal.AsinCalculator;
 import ch.obermuhlner.math.big.internal.CosCalculator;
 import ch.obermuhlner.math.big.internal.CoshCalculator;
@@ -963,7 +970,8 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 		MathContext mc = new MathContext(mathContext.getPrecision() + 2, mathContext.getRoundingMode());
 
 		BigDecimal result = log(x, mc).divide(logTen(mc), mc);
-		return round(result, mathContext);
+		BigDecimal rounded = round(result, mathContext);
+		return rounded.stripTrailingZeros();
 	}
 	
 	private static BigDecimal logUsingNewton(BigDecimal x, MathContext mathContext) {
@@ -1301,7 +1309,7 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
         BigDecimal z = ONE.add(fractionalPart.divide(integralPart, mc));
         BigDecimal t = expTaylor(z, mc);
 
-        BigDecimal result = pow(t, integralPart.intValueExact(), mc);
+        BigDecimal result = pow(t, integralPart.longValueExact(), mc);
 
 		return round(result, mathContext);
 	}
@@ -1691,7 +1699,7 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 	/**
 	 * Converts an angle measured in radians to an approximately equivalent angle measured in degrees.
 	 * The conversion from radians to degrees is generally inexact, it uses the number PI with the precision specified in the mathContext.
-	 * @param x An angle in radians.
+	 * @param x an angle in radians.
 	 * @param mathContext the {@link MathContext} used for the result
 	 * @return The angle in degrees.
 	 * @throws UnsupportedOperationException if the {@link MathContext} has unlimited precision
@@ -1704,20 +1712,213 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 	}
 
 	/**
-	 /**
-	 * Converts an angle measured in degrees to an approximately equivalent angle measured in radians.
-	 * The conversion from degrees to radians is generally inexact, it uses the number PI with the precision specified in the mathContext.
-	 *
-	 * @param x An angle in degrees.
-	 * @param mathContext the {@link MathContext} used for the result
-	 * @return The angle in radians.
-	 * @throws UnsupportedOperationException if the {@link MathContext} has unlimited precision
-	 */
+	* Converts an angle measured in degrees to an approximately equivalent angle measured in radians.
+	* The conversion from degrees to radians is generally inexact, it uses the number PI with the precision specified in the mathContext.
+	*
+	* @param x an angle in degrees.
+	* @param mathContext the {@link MathContext} used for the result
+	* @return The angle in radians.
+	* @throws UnsupportedOperationException if the {@link MathContext} has unlimited precision
+	*/
 	public static BigDecimal toRadians(BigDecimal x, MathContext mathContext) {
 		checkMathContext(mathContext);
 		MathContext mc = new MathContext(mathContext.getPrecision() + 6, mathContext.getRoundingMode());
 		BigDecimal result = x.multiply(pi(mc).divide(ONE_HUNDRED_EIGHTY, mc), mc);
 		return round(result, mathContext);
+	}
+
+	/**
+	* Fast add that uses rounding not only for the result, but for the calculation also.
+	*
+	* @param augend is a number to which another number is added.
+	* @param addend is a number which is added to an augend.
+	* @param mathContext the {@link MathContext} used for the calculation and result.
+	* @return augend + addend, rounded as necessary.
+	*/
+	public static BigDecimal add(BigDecimal augend, BigDecimal addend, MathContext mathContext) {
+		BigDecimal augendRounded = round2(augend, mathContext);
+		BigDecimal addendRounded = round2(addend, mathContext);
+
+		int augendExponentPlus1 = augendRounded.precision() - augendRounded.scale() /*- 1*/;
+		int addendExponentPlus1 = addendRounded.precision() - addendRounded.scale() /*- 1*/;
+
+		int mcPrecision = mathContext.getPrecision();
+		if (augendExponentPlus1 >= addendExponentPlus1) {
+			if (augendExponentPlus1 - addendExponentPlus1 >= mcPrecision) {
+				return augend;
+			}
+		} else {
+			if (addendExponentPlus1 - augendExponentPlus1 >= mcPrecision) {
+				return addend;
+			}
+		}
+
+		return augend.add(addend, mathContext);
+	}
+
+	/**
+	 * Fast subtract that uses rounding not only for the result, but for the calculation also.
+	 *
+	 * @param minuend is a number from which the subtrahend is to be subtracted.
+	 * @param subtrahend is a number that is to be subtracted from a minuend.
+	 * @param mathContext the {@link MathContext} used for the calculation and result.
+	 * @return minuend - subtrahend, rounded as necessary.
+	 */
+	public static BigDecimal subtract(BigDecimal minuend, BigDecimal subtrahend, MathContext mathContext) {
+		BigDecimal minuendRounded = round2(minuend, mathContext);
+		BigDecimal subtrahendRounded = round2(subtrahend, mathContext);
+
+		int minuendExponentPlus1 = minuendRounded.precision() - minuendRounded.scale() /*- 1*/;
+		int subtrahendExponentPlus1 = subtrahendRounded.precision() - subtrahendRounded.scale() /*- 1*/;
+
+		int mcPrecision = mathContext.getPrecision();
+		if (minuendExponentPlus1 >= subtrahendExponentPlus1) {
+			if (minuendExponentPlus1 - subtrahendExponentPlus1 >= mcPrecision) {
+				return minuend;
+			}
+		} else {
+			if (subtrahendExponentPlus1 - minuendExponentPlus1 >= mcPrecision) {
+				return subtrahend.negate();
+			}
+		}
+
+		return minuend.subtract(subtrahend, mathContext);
+	}
+
+	/**
+	 * Fraction calculation using Continued fraction algorithm.
+	 * <p>See: <a href="https://jonisalonen.com/2012/converting-decimal-numbers-to-ratios/">Converting decimal numbers to fractions</a></p>
+	 *
+	 * <p>Examples:</p>
+	 * <ul>
+	 * <li><code>convertToFraction(new BigDecimal("0.894784"), new BigDecimal("9999999999999999999999"), new BigDecimal("9999999999999999999999"), 12, MathContext.DECIMAL128);</code> returns 13981/15625</li>
+	 * </ul>
+	 *
+	 * @param value decimal
+	 * @param maxNumeratorValue maximum numerator value to calculate
+	 * @param maxDenominatorValue maximum denominator value to calculate
+	 * @param tolerance uses in calculation
+	 * @param mathContext the {@link MathContext} used for the calculation and result.
+	 * @return {@link BigIntegerFraction}
+	 * @throws IllegalArgumentException
+	 * @throws UnableToFindFractionRuntimeException
+	 */
+	public static BigIntegerFraction convertToFraction(BigDecimal value,
+													   BigDecimal maxNumeratorValue,
+													   BigDecimal maxDenominatorValue,
+													   int tolerance,
+													   MathContext mathContext) throws IllegalArgumentException, UnableToFindFractionRuntimeException {
+		int mcPrecision = mathContext.getPrecision();
+		if (tolerance >= mcPrecision) {
+			throw new IllegalArgumentException("Tolerance must be less than MathContext precision");
+		}
+		BigDecimal toleranceBigDecimal = new BigDecimal("1E-" + (mcPrecision - tolerance));
+
+		boolean positive = value.compareTo(BigDecimal.ZERO) >= 0;
+		value = value.abs(mathContext);
+
+		BigDecimal remainder = value.remainder(BigDecimal.ONE, mathContext);
+		if (remainder.compareTo(BigDecimal.ZERO) == 0) {
+			if (value.compareTo(maxNumeratorValue) > 0) {
+				throw new UnableToFindFractionRuntimeException("Unable to find numerator for " + value + " value because it reached the max numerator limit " + maxNumeratorValue);
+			}
+			BigInteger numerator = value.toBigInteger();
+			return new BigIntegerFraction(positive, numerator, BigInteger.ONE);
+		}
+
+		BigDecimal pn1 = BigDecimal.ONE;
+		BigDecimal pn2 = BigDecimal.ZERO;
+		BigDecimal qn1 = BigDecimal.ZERO;
+		BigDecimal qn2 = BigDecimal.ONE;
+		BigDecimal x = value;
+
+		BigDecimal left;
+		BigDecimal right;
+
+		do {
+			BigDecimal a = x.setScale(0, RoundingMode.FLOOR);
+
+			BigDecimal aux = pn1;
+			pn1 = add((a.multiply(pn1, mathContext)), pn2, mathContext);
+			if (pn1.compareTo(maxNumeratorValue) > 0) {
+				throw new UnableToFindFractionRuntimeException("Unable to find numerator for " + value + " value because it reached the max numerator limit " + maxNumeratorValue);
+			}
+
+			pn2 = aux;
+			aux = qn1;
+			qn1 = add(a.multiply(qn1, mathContext), qn2, mathContext);
+			if (qn1.compareTo(maxDenominatorValue) > 0) {
+				throw new UnableToFindFractionRuntimeException("Unable to find denominator for " + value + " value because it reached the max denominator limit " + maxDenominatorValue);
+			}
+
+			BigDecimal numeratorDivideDenominator = pn1.divide(qn1, mathContext);
+			left = subtract(value, numeratorDivideDenominator, mathContext).abs(mathContext);
+			right = value.multiply(toleranceBigDecimal, mathContext);
+
+			qn2 = aux;
+			BigDecimal xSubtractA = subtract(x, a, mathContext);
+			if (xSubtractA.compareTo(BigDecimal.ZERO) == 0) {
+				break;
+			}
+			x = BigDecimal.ONE.divide(xSubtractA, mathContext);
+		} while (left.compareTo(right) > 0);
+
+		BigInteger numerator = pn1.toBigInteger();
+		if (new BigDecimal(numerator).compareTo(pn1) != 0) {
+			throw new UnableToFindFractionRuntimeException("Numerator is not an Integer: " + pn1);
+		}
+		BigInteger denominator = qn1.toBigInteger();
+		if (new BigDecimal(denominator).compareTo(qn1) != 0) {
+			throw new UnableToFindFractionRuntimeException("Denominator is not an Integer: " + qn1);
+		}
+
+		return new BigIntegerFraction(positive, numerator, denominator);
+	}
+
+	//TODO replace with fast add
+	//TODO change type to BigInteger
+	/**
+	 * Function check that given value is prime number
+	 *
+	 * @param value BigInteger
+	 * @param mathContext the {@link MathContext} used for the calculation and result.
+	 * @return true if value is prime number, otherwise false
+	 */
+	public static boolean checkPrimeNumber(BigDecimal value, MathContext mathContext) {
+		if (value.compareTo(BigDecimal.ONE) <= 0)
+			return false;
+		else if (value.compareTo(BigDecimal.valueOf(3)) <= 0)
+			return true;
+		else if (value.remainder(BigDecimal.valueOf(2), mathContext).compareTo(BigDecimal.ZERO) == 0 ||
+				value.remainder(BigDecimal.valueOf(3), mathContext).compareTo(BigDecimal.ZERO) == 0)
+			return false;
+		BigDecimal n = BigDecimal.valueOf(5);
+		while (n.multiply(n, mathContext).compareTo(value) <= 0) {
+			if (value.remainder(n).compareTo(BigDecimal.ZERO) == 0 || value.remainder(n.add(BigDecimal.valueOf(2), mathContext)).compareTo(BigDecimal.ZERO) == 0)
+				return false;
+			n = n.add(BigDecimal.valueOf(6), mathContext);
+		}
+		return true;
+	}
+
+	/**
+	 * Rounds the specified {@link BigDecimal} to the precision of the specified {@link MathContext}.
+	 * If the absolute value of the BigDecimal is less than a threshold determined by the precision of the MathContext,
+	 * it returns BigDecimal.ZERO. Otherwise, it rounds the value using the MathContext.
+	 *
+	 * <p>This method calls {@link BigDecimal#round(MathContext)}.</p>
+	 *
+	 * @param value the {@link BigDecimal} to round
+	 * @param mathContext the {@link MathContext} used for the result
+	 * @return the rounded {@link BigDecimal} value
+	 * @see BigDecimal#round(MathContext)
+	 * @see BigDecimalMath#roundWithTrailingZeroes(BigDecimal, MathContext)
+	 */
+	public static BigDecimal round2(BigDecimal value, MathContext mathContext) {
+		if (value.abs().compareTo(BigDecimal.ONE.scaleByPowerOfTen(-mathContext.getPrecision())) < 0) {
+			return BigDecimal.ZERO;
+		}
+		return value.round(mathContext);
 	}
 
 	private static void checkMathContext (MathContext mathContext) {

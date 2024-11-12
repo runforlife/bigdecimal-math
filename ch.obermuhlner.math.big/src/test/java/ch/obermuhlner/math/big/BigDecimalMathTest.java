@@ -1,23 +1,20 @@
 package ch.obermuhlner.math.big;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import ch.obermuhlner.math.big.stream.BigDecimalStream;
+import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Random;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import ch.obermuhlner.math.big.stream.BigDecimalStream;
 import static ch.obermuhlner.util.ThreadUtil.runMultiThreaded;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class BigDecimalMathTest {
 
@@ -751,7 +748,15 @@ public class BigDecimalMathTest {
 				},
 				20);
 	}
-	
+
+	@Test
+	public void testPow_whenSpecialCase_thenShouldNotThrowOverflow() {
+		BigDecimal x = new BigDecimal("85");
+		BigDecimal y = new BigDecimal("483379540.5878915618046344614959831"); // not possible with than longValueExact()
+		BigDecimal expected = new BigDecimal("8.191399333915731143433650968385840E+932641633");
+		assertEquals(expected, BigDecimalMath.pow(x, y, MC));
+	}
+
 	@Test
 	public void testPowRandom() {
 		assertRandomCalculation(
@@ -1003,6 +1008,12 @@ public class BigDecimalMathTest {
 	}
 
 	@Test
+	public void testLog1_shouldTrailZeroes() {
+		BigDecimal actual = BigDecimalMath.log10(new BigDecimal("1"), MC);
+		assertEquals(BigDecimal.ZERO, actual);
+	}
+
+	@Test
 	public void testLogHuge() {
 		// Result from wolframalpha.com: log(1e399)
 		BigDecimal expected = new BigDecimal("918.7314521046242279231785904190613188328394939628804174372");
@@ -1040,6 +1051,13 @@ public class BigDecimalMathTest {
 	@Test(expected = UnsupportedOperationException.class)
 	public void testLog10UnlimitedFail() {
 		BigDecimalMath.log10(BigDecimal.valueOf(2), MathContext.UNLIMITED);
+	}
+
+	@Test
+	public void testLog10StripTrailingZeros() {
+		MathContext mathContext = new MathContext(50);
+		BigDecimal actualLog10 = BigDecimalMath.log10(new BigDecimal(1), mathContext);
+		assertEquals("0", actualLog10.toString());
 	}
 
 	@Test
