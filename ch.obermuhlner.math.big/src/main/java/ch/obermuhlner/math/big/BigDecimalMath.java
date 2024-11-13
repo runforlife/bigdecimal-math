@@ -784,7 +784,7 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 	 * <p>See <a href="http://en.wikipedia.org/wiki/Square_root">Wikipedia: Square root</a></p>
 	 * 
 	 * @param x the {@link BigDecimal} value to calculate the square root
-	 * @param mathContext the {@link MathContext} used for the result
+	 * @param mathContext the {@link MathContext} used for the calculation and result.
 	 * @return the calculated square root of x with the precision specified in the <code>mathContext</code>
 	 * @throws ArithmeticException if x &lt; 0
 	 * @throws UnsupportedOperationException if the {@link MathContext} has unlimited precision
@@ -815,22 +815,23 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 
 		if (adaptivePrecision < maxPrecision) {
 			if (result.multiply(result).compareTo(x) == 0) {
-				return round(result, mathContext); // early exit if x is a square number
+				return round2(result, mathContext); // early exit if x is a square number
 			}
 
+			MathContext adaptiveMC;
 			do {
 				last = result;
 				adaptivePrecision <<= 1;
 				if (adaptivePrecision > maxPrecision) {
 					adaptivePrecision = maxPrecision;
 				}
-				MathContext mc = new MathContext(adaptivePrecision, mathContext.getRoundingMode());
-				result = x.divide(result, mc).add(last).multiply(ONE_HALF, mc);
+				adaptiveMC = new MathContext(adaptivePrecision, mathContext.getRoundingMode());
+				result = add(x.divide(result, adaptiveMC), last, adaptiveMC).multiply(ONE_HALF, adaptiveMC);
 			}
-			while (adaptivePrecision < maxPrecision || result.subtract(last).abs().compareTo(acceptableError) > 0);
+			while (adaptivePrecision < maxPrecision || subtract(result, last, adaptiveMC).abs().compareTo(acceptableError) > 0);
 		}
 
-		return round(result, mathContext);
+		return round2(result, mathContext);
 	}
 
 	/**
