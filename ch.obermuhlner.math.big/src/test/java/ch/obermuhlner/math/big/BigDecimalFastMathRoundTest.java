@@ -18,6 +18,6 @@ public class BigDecimalFastMathRoundTest {
         MathContext mc = new MathContext(68, RoundingMode.HALF_EVEN);
 
         assertNotEquals(BigDecimal.ZERO, nearZero74.round(mc));
-        assertEquals(BigDecimal.ZERO, BigDecimalMath.round2(nearZero74, mc));
+        assertEquals(new BigDecimal("1E-73"), BigDecimalMath.round(nearZero74, mc));
     }
 }

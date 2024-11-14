@@ -815,7 +815,7 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 
 		if (adaptivePrecision < maxPrecision) {
 			if (result.multiply(result).compareTo(x) == 0) {
-				return round2(result, mathContext); // early exit if x is a square number
+				return round(result, mathContext); // early exit if x is a square number
 			}
 
 			MathContext adaptiveMC;
@@ -831,7 +831,7 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 			while (adaptivePrecision < maxPrecision || subtract(result, last, adaptiveMC).abs().compareTo(acceptableError) > 0);
 		}
 
-		return round2(result, mathContext);
+		return round(result, mathContext);
 	}
 
 	/**
@@ -990,7 +990,7 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 			result = BigDecimal.valueOf(Math.log(doubleX));
 			adaptivePrecision = EXPECTED_INITIAL_PRECISION;
 		} else {
-			result = x.divide(TWO, mathContext);
+			result = divide(x, TWO, mathContext);
 			adaptivePrecision = 1;
 		}
 
@@ -1004,9 +1004,9 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 			MathContext mc = new MathContext(adaptivePrecision, mathContext.getRoundingMode());
 			
 			BigDecimal expY = BigDecimalMath.exp(result, mc);
-			step = TWO.multiply(x.subtract(expY)).divide(x.add(expY), mc);
+			step = divide(multiply(TWO, subtract(x, expY, mc), mc), x.add(expY), mc);
 			//System.out.println("  step " + step + " adaptivePrecision=" + adaptivePrecision);
-			result = result.add(step);
+			result = add(result, step, mc);
 		} while (adaptivePrecision < maxPrecision || step.abs().compareTo(acceptableError) > 0);
 
 		return result;
@@ -1737,8 +1737,8 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 	* @return augend + addend, rounded as necessary.
 	*/
 	public static BigDecimal add(BigDecimal augend, BigDecimal addend, MathContext mathContext) {
-		BigDecimal augendRounded = round2(augend, mathContext);
-		BigDecimal addendRounded = round2(addend, mathContext);
+		BigDecimal augendRounded = round(augend, mathContext);
+		BigDecimal addendRounded = round(addend, mathContext);
 
 		int augendExponentPlus1 = augendRounded.precision() - augendRounded.scale() /*- 1*/;
 		int addendExponentPlus1 = addendRounded.precision() - addendRounded.scale() /*- 1*/;
@@ -1766,8 +1766,8 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 	 * @return minuend - subtrahend, rounded as necessary.
 	 */
 	public static BigDecimal subtract(BigDecimal minuend, BigDecimal subtrahend, MathContext mathContext) {
-		BigDecimal minuendRounded = round2(minuend, mathContext);
-		BigDecimal subtrahendRounded = round2(subtrahend, mathContext);
+		BigDecimal minuendRounded = round(minuend, mathContext);
+		BigDecimal subtrahendRounded = round(subtrahend, mathContext);
 
 		int minuendExponentPlus1 = minuendRounded.precision() - minuendRounded.scale() /*- 1*/;
 		int subtrahendExponentPlus1 = subtrahendRounded.precision() - subtrahendRounded.scale() /*- 1*/;
@@ -1784,6 +1784,36 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 		}
 
 		return minuend.subtract(subtrahend, mathContext);
+	}
+
+	/**
+	 * Fast multiply that uses rounding not only for the result, but for the calculation also.
+	 *
+	 * @param multiplicand is the number to which another number is multiplied.
+	 * @param multiplier is a number which is multiplied by the multiplicand.
+	 * @param mathContext the {@link MathContext} used for the calculation and result.
+	 * @return multiplicand * multiplier, rounded as necessary.
+	 */
+	public static BigDecimal multiply(BigDecimal multiplicand, BigDecimal multiplier, MathContext mathContext) {
+		BigDecimal multiplicandRounded = round(multiplicand, mathContext);
+		BigDecimal multiplierRounded = round(multiplier, mathContext);
+
+		return multiplicandRounded.multiply(multiplierRounded, mathContext);
+	}
+
+	/**
+	 * Fast divide that uses rounding not only for the result, but for the calculation also.
+	 *
+	 * @param dividend is the number that is being divided.
+	 * @param divisor is a number by which another number is to be divided.
+	 * @param mathContext the {@link MathContext} used for the calculation and result.
+	 * @return dividend / divisor, rounded as necessary.
+	 */
+	public static BigDecimal divide(BigDecimal dividend, BigDecimal divisor, MathContext mathContext) {
+		BigDecimal dividendRounded = round(dividend, mathContext);
+		BigDecimal divisorRounded = round(divisor, mathContext);
+
+		return dividendRounded.divide(divisorRounded, mathContext);
 	}
 
 	/**
@@ -1840,28 +1870,28 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 			BigDecimal a = x.setScale(0, RoundingMode.FLOOR);
 
 			BigDecimal aux = pn1;
-			pn1 = add((a.multiply(pn1, mathContext)), pn2, mathContext);
+			pn1 = add((multiply(a, pn1, mathContext)), pn2, mathContext);
 			if (pn1.compareTo(maxNumeratorValue) > 0) {
 				throw new UnableToFindFractionRuntimeException("Unable to find numerator for " + value + " value because it reached the max numerator limit " + maxNumeratorValue);
 			}
 
 			pn2 = aux;
 			aux = qn1;
-			qn1 = add(a.multiply(qn1, mathContext), qn2, mathContext);
+			qn1 = add(multiply(a, qn1, mathContext), qn2, mathContext);
 			if (qn1.compareTo(maxDenominatorValue) > 0) {
 				throw new UnableToFindFractionRuntimeException("Unable to find denominator for " + value + " value because it reached the max denominator limit " + maxDenominatorValue);
 			}
 
-			BigDecimal numeratorDivideDenominator = pn1.divide(qn1, mathContext);
+			BigDecimal numeratorDivideDenominator = divide(pn1, qn1, mathContext);
 			left = subtract(value, numeratorDivideDenominator, mathContext).abs(mathContext);
-			right = value.multiply(toleranceBigDecimal, mathContext);
+			right = multiply(value, toleranceBigDecimal, mathContext);
 
 			qn2 = aux;
 			BigDecimal xSubtractA = subtract(x, a, mathContext);
 			if (xSubtractA.compareTo(BigDecimal.ZERO) == 0) {
 				break;
 			}
-			x = BigDecimal.ONE.divide(xSubtractA, mathContext);
+			x = divide(BigDecimal.ONE, xSubtractA, mathContext);
 		} while (left.compareTo(right) > 0);
 
 		BigInteger numerator = pn1.toBigInteger();
@@ -1902,27 +1932,7 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 		return true;
 	}
 
-	/**
-	 * Rounds the specified {@link BigDecimal} to the precision of the specified {@link MathContext}.
-	 * If the absolute value of the BigDecimal is less than a threshold determined by the precision of the MathContext,
-	 * it returns BigDecimal.ZERO. Otherwise, it rounds the value using the MathContext.
-	 *
-	 * <p>This method calls {@link BigDecimal#round(MathContext)}.</p>
-	 *
-	 * @param value the {@link BigDecimal} to round
-	 * @param mathContext the {@link MathContext} used for the result
-	 * @return the rounded {@link BigDecimal} value
-	 * @see BigDecimal#round(MathContext)
-	 * @see BigDecimalMath#roundWithTrailingZeroes(BigDecimal, MathContext)
-	 */
-	public static BigDecimal round2(BigDecimal value, MathContext mathContext) {
-		if (value.abs().compareTo(BigDecimal.ONE.scaleByPowerOfTen(-mathContext.getPrecision())) < 0) {
-			return BigDecimal.ZERO;
-		}
-		return value.round(mathContext);
-	}
-
-	private static void checkMathContext (MathContext mathContext) {
+	private static void checkMathContext(MathContext mathContext) {
 		if (mathContext.getPrecision() == 0) {
 			throw new UnsupportedOperationException("Unlimited MathContext not supported");
 		}
