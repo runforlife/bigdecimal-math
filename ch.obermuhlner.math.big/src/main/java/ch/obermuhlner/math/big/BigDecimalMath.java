@@ -1745,20 +1745,6 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 		BigDecimal augendRounded = round(augend, mc);
 		BigDecimal addendRounded = round(addend, mc);
 
-		int augendExponentPlus1 = augendRounded.precision() - augendRounded.scale() /*- 1*/;
-		int addendExponentPlus1 = addendRounded.precision() - addendRounded.scale() /*- 1*/;
-
-		int mcPrecision = mathContext.getPrecision();
-		if (augendExponentPlus1 >= addendExponentPlus1) {
-			if (augendExponentPlus1 - addendExponentPlus1 >= mcPrecision) {
-				return round(augend, mathContext);
-			}
-		} else {
-			if (addendExponentPlus1 - augendExponentPlus1 >= mcPrecision) {
-				return round(addend, mathContext);
-			}
-		}
-
 		return augendRounded.add(addendRounded, mathContext);
 	}
 
@@ -1775,20 +1761,6 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 
 		BigDecimal minuendRounded = round(minuend, mc);
 		BigDecimal subtrahendRounded = round(subtrahend, mc);
-
-		int minuendExponentPlus1 = minuendRounded.precision() - minuendRounded.scale() /*- 1*/;
-		int subtrahendExponentPlus1 = subtrahendRounded.precision() - subtrahendRounded.scale() /*- 1*/;
-
-		int mcPrecision = mathContext.getPrecision();
-		if (minuendExponentPlus1 >= subtrahendExponentPlus1) {
-			if (minuendExponentPlus1 - subtrahendExponentPlus1 >= mcPrecision) {
-				return round(minuend, mathContext);
-			}
-		} else {
-			if (subtrahendExponentPlus1 - minuendExponentPlus1 >= mcPrecision) {
-				return round(subtrahend.negate(), mathContext);
-			}
-		}
 
 		return minuendRounded.subtract(subtrahendRounded, mathContext);
 	}
@@ -1823,13 +1795,6 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 
 		BigDecimal dividendRounded = round(dividend, mc);
 		BigDecimal divisorRounded = round(divisor, mc);
-
-		if (dividendRounded.compareTo(dividend) != 0) {
-			System.out.println();
-		}
-		if (divisorRounded.compareTo(divisor) != 0) {
-			System.out.println();
-		}
 
 		return dividendRounded.divide(divisorRounded, mathContext);
 	}
