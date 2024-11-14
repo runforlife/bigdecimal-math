@@ -1337,6 +1337,19 @@ public class BigDecimalMathTest {
 	}
 
 	@Test
+	public void testAcoshZero() {
+		Exception actualException1 = assertThrows(ArithmeticException.class, () ->
+				BigDecimalMath.acosh(BigDecimal.ZERO, MathContext.DECIMAL128)
+		);
+		assertEquals("Illegal acosh(x) for x >= 1: x = 0", actualException1.getMessage());
+
+		Exception actualException2 = assertThrows(ArithmeticException.class, () ->
+				BigDecimalMath.acosh(new BigDecimal("0.99999"), MathContext.DECIMAL128)
+		);
+		assertEquals("Illegal acosh(x) for x >= 1: x = 0.99999", actualException2.getMessage());
+	}
+
+	@Test
 	public void testTan() {
 		for(double value : new double[] { 1.1, -10, -5, -1, -0.3, 0, 0.1, 2, 10, 20, 222 }) {
 			assertBigDecimal("tan(" + value + ")",

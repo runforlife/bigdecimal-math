@@ -56,7 +56,7 @@ public class BigDecimalMath {
 
 	private static final int EXPECTED_INITIAL_PRECISION = 15;
 
-	private static BigDecimal[] factorialCache = new BigDecimal[100];
+	private static final BigDecimal[] factorialCache = new BigDecimal[100];
 
 	static {
 		BigDecimal result = ONE;
@@ -215,7 +215,7 @@ public class BigDecimalMath {
 		}
 
 		if (mathContext.getPrecision() != 0) {
-			result = result.round(mathContext);
+			result = round(result, mathContext);
 		}
 
 		return result;
@@ -454,7 +454,7 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
             }
             return stripped.add(zero, mathContext);
         } catch (ArithmeticException ex) {
-		    return value.round(mathContext);
+		    return round(value, mathContext);
         }
 	}
 
@@ -1650,6 +1650,9 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 	 * @throws UnsupportedOperationException if the {@link MathContext} has unlimited precision
 	 */
 	public static BigDecimal acosh(BigDecimal x, MathContext mathContext) {
+		if (x.compareTo(BigDecimal.ONE) < 0) {
+			throw new ArithmeticException("Illegal acosh(x) for x >= 1: x = " + x);
+		}
 		checkMathContext(mathContext);
 		MathContext mc = new MathContext(mathContext.getPrecision() + 6, mathContext.getRoundingMode());
 		BigDecimal result = log(x.add(sqrt(x.multiply(x).subtract(ONE), mc)), mc);
