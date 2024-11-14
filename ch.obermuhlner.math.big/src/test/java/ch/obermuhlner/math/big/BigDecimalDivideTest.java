@@ -84,7 +84,7 @@ public class BigDecimalDivideTest {
 
     @Test
     public void divide_whenInputOutsideThePrecision() {
-        assertEquals(new BigDecimal("6.17284E+6"),
+        assertEquals(new BigDecimal("6172839"),
                 BigDecimalMath.divide(
                         new BigDecimal("12345678"),
                         new BigDecimal("2"),

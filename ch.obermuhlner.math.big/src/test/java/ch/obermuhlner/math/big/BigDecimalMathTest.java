@@ -1443,6 +1443,7 @@ public class BigDecimalMathTest {
 					BigDecimal pi = BigDecimalMath.pi(mathContext);
 					BigDecimal result = BigDecimalMath.atan2(y, x, mathContext);
 					if (result.compareTo(pi.negate()) < 0 || result.compareTo(pi) > 0) {
+						BigDecimalMath.atan2(y, x, mathContext);
 					   fail("outside allowed range: " + result + " for y=" + y + ", x=" + x);
 					}
 					return result;

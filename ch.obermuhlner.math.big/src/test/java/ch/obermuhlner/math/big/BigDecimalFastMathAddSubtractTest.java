@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 
 public class BigDecimalFastMathAddSubtractTest {
     private static final MathContext DECIMAL_7_DIGITS = MathContext.DECIMAL32;
@@ -79,7 +80,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("1");
 
         BigDecimal actual = BigDecimalMath.add(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("87654321"), actual);
+        assertEquals(new BigDecimal("8.765432E+7"), actual);
     }
 
     @Test
@@ -88,7 +89,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("87654321");
 
         BigDecimal actual = BigDecimalMath.add(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("87654321"), actual);
+        assertEquals(new BigDecimal("8.765432E+7"), actual);
     }
 
     @Test
@@ -97,7 +98,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("2109876543210");
 
         BigDecimal actual = BigDecimalMath.add(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("98765432109876543210"), actual);
+        assertEquals(new BigDecimal("9.876543E+19"), actual);
     }
 
     @Test
@@ -106,7 +107,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("98765432109876543210");
 
         BigDecimal actual = BigDecimalMath.add(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("98765432109876543210"), actual);
+        assertEquals(new BigDecimal("9.876543E+19"), actual);
     }
 
     @Test
@@ -178,7 +179,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("-1");
 
         BigDecimal actual = BigDecimalMath.add(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("87654321"), actual);
+        assertEquals(new BigDecimal("8.765432E+7"), actual);
     }
 
     @Test
@@ -187,7 +188,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("-87654321");
 
         BigDecimal actual = BigDecimalMath.add(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("-87654321"), actual);
+        assertEquals(new BigDecimal("-8.765432E+7"), actual);
     }
 
     @Test
@@ -196,7 +197,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("-2109876543210");
 
         BigDecimal actual = BigDecimalMath.add(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("98765432109876543210"), actual);
+        assertEquals(new BigDecimal("9.876543E+19"), actual);
     }
 
     @Test
@@ -205,7 +206,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("-98765432109876543210");
 
         BigDecimal actual = BigDecimalMath.add(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("-98765432109876543210"), actual);
+        assertEquals(new BigDecimal("-9.876543E+19"), actual);
     }
 
     @Test
@@ -277,7 +278,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("-1");
 
         BigDecimal actual = BigDecimalMath.add(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("-87654321"), actual);
+        assertEquals(new BigDecimal("-8.765432E+7"), actual);
     }
 
     @Test
@@ -286,7 +287,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("-87654321");
 
         BigDecimal actual = BigDecimalMath.add(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("-87654321"), actual);
+        assertEquals(new BigDecimal("-8.765432E+7"), actual);
     }
 
     @Test
@@ -295,7 +296,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("-2109876543210");
 
         BigDecimal actual = BigDecimalMath.add(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("-98765432109876543210"), actual);
+        assertEquals(new BigDecimal("-9.876543E+19"), actual);
     }
 
     @Test
@@ -304,7 +305,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("-98765432109876543210");
 
         BigDecimal actual = BigDecimalMath.add(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("-98765432109876543210"), actual);
+        assertEquals(new BigDecimal("-9.876543E+19"), actual);
     }
 
     @Test
@@ -376,7 +377,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("1");
 
         BigDecimal actual = BigDecimalMath.add(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("-87654321"), actual);
+        assertEquals(new BigDecimal("-8.765432E+7"), actual);
     }
 
     @Test
@@ -385,7 +386,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("87654321");
 
         BigDecimal actual = BigDecimalMath.add(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("87654321"), actual);
+        assertEquals(new BigDecimal("8.765432E+7"), actual);
     }
 
     @Test
@@ -394,7 +395,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("2109876543210");
 
         BigDecimal actual = BigDecimalMath.add(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("-98765432109876543210"), actual);
+        assertEquals(new BigDecimal("-9.876543E+19"), actual);
     }
 
     @Test
@@ -403,7 +404,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("98765432109876543210");
 
         BigDecimal actual = BigDecimalMath.add(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("98765432109876543210"), actual);
+        assertEquals(new BigDecimal("9.876543E+19"), actual);
     }
 
     @Test
@@ -475,7 +476,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("1");
 
         BigDecimal actual = BigDecimalMath.subtract(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("87654321"), actual);
+        assertEquals(new BigDecimal("8.765432E+7"), actual);
     }
 
     @Test
@@ -484,7 +485,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("87654321");
 
         BigDecimal actual = BigDecimalMath.subtract(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("-87654321"), actual);
+        assertEquals(new BigDecimal("-8.765432E+7"), actual);
     }
 
     @Test
@@ -493,7 +494,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("2109876543210");
 
         BigDecimal actual = BigDecimalMath.subtract(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("98765432109876543210"), actual);
+        assertEquals(new BigDecimal("9.876543E+19"), actual);
     }
 
     @Test
@@ -502,7 +503,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("98765432109876543210");
 
         BigDecimal actual = BigDecimalMath.subtract(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("-98765432109876543210"), actual);
+        assertEquals(new BigDecimal("-9.876543E+19"), actual);
     }
 
     @Test
@@ -574,7 +575,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("-1");
 
         BigDecimal actual = BigDecimalMath.subtract(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("87654321"), actual);
+        assertEquals(new BigDecimal("8.765432E+7"), actual);
     }
 
     @Test
@@ -583,7 +584,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("-87654321");
 
         BigDecimal actual = BigDecimalMath.subtract(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("87654321"), actual);
+        assertEquals(new BigDecimal("8.765432E+7"), actual);
     }
 
     @Test
@@ -592,7 +593,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("-2109876543210");
 
         BigDecimal actual = BigDecimalMath.subtract(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("98765432109876543210"), actual);
+        assertEquals(new BigDecimal("9.876543E+19"), actual);
     }
 
     @Test
@@ -601,7 +602,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("-98765432109876543210");
 
         BigDecimal actual = BigDecimalMath.subtract(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("98765432109876543210"), actual);
+        assertEquals(new BigDecimal("9.876543E+19"), actual);
     }
 
     @Test
@@ -673,7 +674,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("-1");
 
         BigDecimal actual = BigDecimalMath.subtract(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("-87654321"), actual);
+        assertEquals(new BigDecimal("-8.765432E+7"), actual);
     }
 
     @Test
@@ -682,7 +683,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("-87654321");
 
         BigDecimal actual = BigDecimalMath.subtract(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("87654321"), actual);
+        assertEquals(new BigDecimal("8.765432E+7"), actual);
     }
 
     @Test
@@ -691,7 +692,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("-2109876543210");
 
         BigDecimal actual = BigDecimalMath.subtract(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("-98765432109876543210"), actual);
+        assertEquals(new BigDecimal("-9.876543E+19"), actual);
     }
 
     @Test
@@ -700,7 +701,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("-98765432109876543210");
 
         BigDecimal actual = BigDecimalMath.subtract(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("98765432109876543210"), actual);
+        assertEquals(new BigDecimal("9.876543E+19"), actual);
     }
 
     @Test
@@ -772,7 +773,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("1");
 
         BigDecimal actual = BigDecimalMath.subtract(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("-87654321"), actual);
+        assertEquals(new BigDecimal("-8.765432E+7"), actual);
     }
 
     @Test
@@ -781,7 +782,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("87654321");
 
         BigDecimal actual = BigDecimalMath.subtract(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("-87654321"), actual);
+        assertEquals(new BigDecimal("-8.765432E+7"), actual);
     }
 
     @Test
@@ -790,7 +791,7 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("2109876543210");
 
         BigDecimal actual = BigDecimalMath.subtract(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("-98765432109876543210"), actual);
+        assertEquals(new BigDecimal("-9.876543E+19"), actual);
     }
 
     @Test
@@ -799,6 +800,24 @@ public class BigDecimalFastMathAddSubtractTest {
         BigDecimal b = new BigDecimal("98765432109876543210");
 
         BigDecimal actual = BigDecimalMath.subtract(a, b, DECIMAL_7_DIGITS);
-        assertEquals(new BigDecimal("-98765432109876543210"), actual);
+        assertEquals(new BigDecimal("-9.876543E+19"), actual);
+    }
+
+    @Test
+    public void subtract_returnRoundedMinuend() {
+        BigDecimal a = new BigDecimal("3.142");
+        BigDecimal b = new BigDecimal("0.5559");
+
+        BigDecimal actual = BigDecimalMath.subtract(a, b, new MathContext(1, RoundingMode.HALF_EVEN));
+        assertEquals(new BigDecimal("3"), actual);
+    }
+
+    @Test
+    public void subtract_returnRoundedSubtrahend() {
+        BigDecimal a = new BigDecimal("0.5559");
+        BigDecimal b = new BigDecimal("3.142");
+
+        BigDecimal actual = BigDecimalMath.subtract(a, b, new MathContext(1, RoundingMode.HALF_EVEN));
+        assertEquals(new BigDecimal("-3"), actual);
     }
 }
