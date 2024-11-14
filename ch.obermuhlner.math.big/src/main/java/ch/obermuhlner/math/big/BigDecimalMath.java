@@ -878,13 +878,13 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 	private static BigDecimal rootUsingNewtonRaphson(BigDecimal x, BigDecimal n, BigDecimal initialResult, MathContext mathContext) {
 		if (n.compareTo(BigDecimal.ONE) <= 0) {
 			MathContext mc = new MathContext(mathContext.getPrecision() + 6, mathContext.getRoundingMode());
-			return pow(x, BigDecimal.ONE.divide(n, mc), mathContext);
+			return pow(x, divide(BigDecimal.ONE, n, mc), mathContext);
 		}
 
 		int maxPrecision = mathContext.getPrecision() * 2;
 		BigDecimal acceptableError = ONE.movePointLeft(mathContext.getPrecision() + 1);
 
-		BigDecimal nMinus1 = n.subtract(ONE);
+		BigDecimal nMinus1 = subtract(n, ONE, mathContext);
 		BigDecimal result = initialResult;
 		int adaptivePrecision = 12;
 
@@ -897,8 +897,8 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 				}
 				MathContext mc = new MathContext(adaptivePrecision, mathContext.getRoundingMode());
 
-				step = x.divide(pow(result, nMinus1, mc), mc).subtract(result).divide(n, mc);
-				result = result.add(step);
+				step = divide(subtract(divide(x, pow(result, nMinus1, mc), mc), result, mc), n, mc);
+				result = add(result, step, mc);
 			} while (adaptivePrecision < maxPrecision || step.abs().compareTo(acceptableError) > 0);
 		}
 
@@ -953,7 +953,7 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 		checkMathContext(mathContext);
 		MathContext mc = new MathContext(mathContext.getPrecision() + 4, mathContext.getRoundingMode());
 
-		BigDecimal result = log(x, mc).divide(logTwo(mc), mc);
+		BigDecimal result = divide(log(x, mc), logTwo(mc), mc);
 		return round(result, mathContext);
 	}
 	
@@ -970,7 +970,7 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 		checkMathContext(mathContext);
 		MathContext mc = new MathContext(mathContext.getPrecision() + 2, mathContext.getRoundingMode());
 
-		BigDecimal result = log(x, mc).divide(logTen(mc), mc);
+		BigDecimal result = divide(log(x, mc), logTen(mc), mc);
 		BigDecimal rounded = round(result, mathContext);
 		return rounded.stripTrailingZeros();
 	}
@@ -1114,28 +1114,28 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
         BigDecimal result = ZERO;
 
         if (factorOfTwo > 0) {
-            correctedX = correctedX.divide(valueOf(powerOfTwo), mc);
-            result = result.add(logTwo(mcDouble).multiply(valueOf(factorOfTwo), mc));
+            correctedX = divide(correctedX, valueOf(powerOfTwo), mc);
+            result = add(result, multiply(logTwo(mcDouble), valueOf(factorOfTwo), mc), mc);
         }
         else if (factorOfTwo < 0) {
-            correctedX = correctedX.multiply(valueOf(powerOfTwo), mc);
-            result = result.subtract(logTwo(mcDouble).multiply(valueOf(-factorOfTwo), mc));
+            correctedX = multiply(correctedX, valueOf(powerOfTwo), mc);
+            result = subtract(result, multiply(logTwo(mcDouble), valueOf(-factorOfTwo), mc), mc);
         }
 
         if (factorOfThree > 0) {
-            correctedX = correctedX.divide(valueOf(powerOfThree), mc);
-            result = result.add(logThree(mcDouble).multiply(valueOf(factorOfThree), mc));
+            correctedX = divide(correctedX, valueOf(powerOfThree), mc);
+            result = add(result, multiply(logThree(mcDouble), valueOf(factorOfThree), mc), mc);
         }
         else if (factorOfThree < 0) {
-            correctedX = correctedX.multiply(valueOf(powerOfThree), mc);
-            result = result.subtract(logThree(mcDouble).multiply(valueOf(-factorOfThree), mc));
+            correctedX = multiply(correctedX, valueOf(powerOfThree), mc);
+            result = subtract(result, multiply(logThree(mcDouble), valueOf(-factorOfThree), mc), mc);
         }
 
         if (x == correctedX && result == ZERO) {
             return logUsingNewton(x, mathContext);
         }
 
-        result = result.add(logUsingNewton(correctedX, mc), mc);
+        result = add(result, logUsingNewton(correctedX, mc), mc);
 
         return result;
     }
