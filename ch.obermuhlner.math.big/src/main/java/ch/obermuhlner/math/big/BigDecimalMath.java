@@ -55,6 +55,7 @@ public class BigDecimalMath {
 	private static final BigDecimal ROUGHLY_TWO_PI = new BigDecimal("3.141592653589793").multiply(TWO);
 
 	private static final int EXPECTED_INITIAL_PRECISION = 15;
+	private static final int ARITHMETIC_RESERVE_PRECISION = 5;
 
 	private static final BigDecimal[] factorialCache = new BigDecimal[100];
 
@@ -1740,7 +1741,7 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 	* @return augend + addend, rounded as necessary.
 	*/
 	public static BigDecimal add(BigDecimal augend, BigDecimal addend, MathContext mathContext) {
-		MathContext mc = new MathContext(2 * mathContext.getPrecision(), mathContext.getRoundingMode());
+		MathContext mc = new MathContext(mathContext.getPrecision() + ARITHMETIC_RESERVE_PRECISION, mathContext.getRoundingMode());
 
 		BigDecimal augendRounded = round(augend, mc);
 		BigDecimal addendRounded = round(addend, mc);
@@ -1757,7 +1758,7 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 	 * @return minuend - subtrahend, rounded as necessary.
 	 */
 	public static BigDecimal subtract(BigDecimal minuend, BigDecimal subtrahend, MathContext mathContext) {
-		MathContext mc = new MathContext(2 * mathContext.getPrecision(), mathContext.getRoundingMode());
+		MathContext mc = new MathContext(mathContext.getPrecision() + ARITHMETIC_RESERVE_PRECISION, mathContext.getRoundingMode());
 
 		BigDecimal minuendRounded = round(minuend, mc);
 		BigDecimal subtrahendRounded = round(subtrahend, mc);
@@ -1774,7 +1775,7 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 	 * @return multiplicand * multiplier, rounded as necessary.
 	 */
 	public static BigDecimal multiply(BigDecimal multiplicand, BigDecimal multiplier, MathContext mathContext) {
-		MathContext mc = new MathContext(2 * mathContext.getPrecision(), mathContext.getRoundingMode());
+		MathContext mc = new MathContext(mathContext.getPrecision() + ARITHMETIC_RESERVE_PRECISION, mathContext.getRoundingMode());
 
 		BigDecimal multiplicandRounded = round(multiplicand, mc);
 		BigDecimal multiplierRounded = round(multiplier, mc);
@@ -1791,7 +1792,7 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 	 * @return dividend / divisor, rounded as necessary.
 	 */
 	public static BigDecimal divide(BigDecimal dividend, BigDecimal divisor, MathContext mathContext) {
-		MathContext mc = new MathContext(2 * mathContext.getPrecision(), mathContext.getRoundingMode());
+		MathContext mc = new MathContext(mathContext.getPrecision() + ARITHMETIC_RESERVE_PRECISION, mathContext.getRoundingMode());
 
 		BigDecimal dividendRounded = round(dividend, mc);
 		BigDecimal divisorRounded = round(divisor, mc);
