@@ -1,6 +1,7 @@
 package ch.obermuhlner.math.big;
 
 import ch.obermuhlner.math.big.stream.BigDecimalStream;
+import ch.obermuhlner.util.AbstractBigDecimalTest;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -8,31 +9,13 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Random;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import static ch.obermuhlner.util.ThreadUtil.runMultiThreaded;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class BigDecimalMathTest {
-
-    public enum TestLevel {
-        Fast,
-        Medium,
-        Slow
-    }
-
-	private static final TestLevel TEST_LEVEL = getTestLevel();
-
-	private static final MathContext MC = MathContext.DECIMAL128;
-
-	private static final MathContext MC_CHECK_DOUBLE = new MathContext(10);
-
-	private static final int AUTO_TEST_MAX_PRECISION = getMaxPrecision();
-	private static final int RANDOM_MAX_PRECISION = getMaxPrecision();
-
+public class BigDecimalMathTest extends AbstractBigDecimalTest {
 	@Test
 	public void testInternals() {
 		assertEquals(null, toCheck(Double.NaN));
@@ -1870,27 +1853,27 @@ public class BigDecimalMathTest {
 				(x, mathContext) -> BigDecimalMath.log(BigDecimalMath.exp(x, mathContext), mathContext));
 	}
 
-/*
-This test fails for some reason only on travis but not on any other machine I have tested it:
-ch.obermuhlner.math.big.BigDecimalMathTest > testLog2PowRandom FAILED
-    java.lang.AssertionError: x=0.87344468893732422696209498372540635905450777208072365658944016386845896582721178218599 x=0.87344468893732422696209498372540635905450777208072365658944016386845896582721178218599 log2(pow(2,x))=0.873444688937324226962094983725406359054507772080723656589618519811102588824061807610765143887160 expected=0.87344468893732422696209498372540635905450777208072365658944016386845896582721178218599 actual=0.873444688937324226962094983725406359054507772080723656589618519811102588824061807610765143887160 precision=86 error=1.78355942643622996850025424775143887160E-58 acceptableError=1E-86
-        at org.junit.Assert.fail(Assert.java:88)
-        at org.junit.Assert.assertTrue(Assert.java:41)
-        at ch.obermuhlner.math.big.BigDecimalMathTest.assertBigDecimal(BigDecimalMathTest.java:1678)
-        at ch.obermuhlner.math.big.BigDecimalMathTest.assertRandomCalculation(BigDecimalMathTest.java:1664)
-        at ch.obermuhlner.math.big.BigDecimalMathTest.testLog2PowRandom(BigDecimalMathTest.java:1542)
+    /*
+    This test fails for some reason only on travis but not on any other machine I have tested it:
+    ch.obermuhlner.math.big.BigDecimalMathTest > testLog2PowRandom FAILED
+        java.lang.AssertionError: x=0.87344468893732422696209498372540635905450777208072365658944016386845896582721178218599 x=0.87344468893732422696209498372540635905450777208072365658944016386845896582721178218599 log2(pow(2,x))=0.873444688937324226962094983725406359054507772080723656589618519811102588824061807610765143887160 expected=0.87344468893732422696209498372540635905450777208072365658944016386845896582721178218599 actual=0.873444688937324226962094983725406359054507772080723656589618519811102588824061807610765143887160 precision=86 error=1.78355942643622996850025424775143887160E-58 acceptableError=1E-86
+            at org.junit.Assert.fail(Assert.java:88)
+            at org.junit.Assert.assertTrue(Assert.java:41)
+            at ch.obermuhlner.math.big.BigDecimalMathTest.assertBigDecimal(BigDecimalMathTest.java:1678)
+            at ch.obermuhlner.math.big.BigDecimalMathTest.assertRandomCalculation(BigDecimalMathTest.java:1664)
+            at ch.obermuhlner.math.big.BigDecimalMathTest.testLog2PowRandom(BigDecimalMathTest.java:1542)
 
-	@Test
-	public void testLog2PowRandom() {
-		assertRandomCalculation(
-                adaptCount(1000),
-				"x",
-				"log2(pow(2,x))",
-				(random, mathContext) -> randomBigDecimal(random, mathContext),
-				(x, mathContext) -> x,
-				(x, mathContext) -> BigDecimalMath.log2(BigDecimalMath.pow(new BigDecimal(2), x, mathContext), mathContext));
-	}
-*/
+    	@Test
+    	public void testLog2PowRandom() {
+    		assertRandomCalculation(
+                    adaptCount(1000),
+    				"x",
+    				"log2(pow(2,x))",
+    				(random, mathContext) -> randomBigDecimal(random, mathContext),
+    				(x, mathContext) -> x,
+    				(x, mathContext) -> BigDecimalMath.log2(BigDecimalMath.pow(new BigDecimal(2), x, mathContext), mathContext));
+    	}
+    */
 	@Test
 	public void testLog10PowRandom() {
 		assertRandomCalculation(
@@ -1917,126 +1900,6 @@ ch.obermuhlner.math.big.BigDecimalMathTest > testLog2PowRandom FAILED
 		assertEquals(0, new BigDecimal("1.570796326794896619231321691639751").compareTo(BigDecimalMath.toRadians(new BigDecimal("90"), MC)));
 		assertEquals(0, new BigDecimal("-1.570796326794896619231321691639751").compareTo(BigDecimalMath.toRadians(new BigDecimal("-90"), MC)));
 	}
-
-	private void assertPrecisionCalculation(Function<MathContext, BigDecimal> precisionCalculation, int startPrecision, int endPrecision) {
-		BigDecimal expected = precisionCalculation.apply(new MathContext(endPrecision * 2));
-		//System.out.println("reference expected:      " + expected);
-		assertPrecisionCalculation(expected, precisionCalculation, startPrecision, endPrecision);
-	}
-
-	private void assertPrecisionCalculation(BigDecimal expected, Function<MathContext, BigDecimal> precisionCalculation, int startPrecision) {
-		assertPrecisionCalculation(expected, precisionCalculation, startPrecision, expected.precision()-20);
-	}
-	
-	private void assertPrecisionCalculation(BigDecimal expected, Function<MathContext, BigDecimal> precisionCalculation, int startPrecision, int endPrecision) {
-		int precision = startPrecision;
-		while (precision <= endPrecision) {
-			MathContext mathContext = new MathContext(precision);
-			System.out.println("Testing precision=" + precision);
-			assertBigDecimal(
-					"precision=" + precision, 
-					expected.round(mathContext),
-					precisionCalculation.apply(mathContext),
-                    mathContext);
-			precision += getPrecisionStep();
-		}
-	}
-	
-	private static interface Function3<T1, T2, T3, R> {
-		R apply(T1 t1, T2 t2, T3 t3);
-	}
-
-	void assertRandomCalculation(int count, String functionName, Function<Random, Double> xFunction, Function<Double, Double> doubleFunction, BiFunction<BigDecimal, MathContext, BigDecimal> calculation) {
-		Random random = new Random(1);
-
-		for (int i = 0; i < count; i++) {
-			int precision = random.nextInt(RANDOM_MAX_PRECISION) + 1;
-			Double xDouble = xFunction.apply(random);
-			BigDecimal x = BigDecimal.valueOf(xDouble);
-			
-			String description = functionName + "(" + x + ")";
-
-			System.out.println("Testing " + description + " precision=" + precision);
-			MathContext mathContext = new MathContext(precision);
-			BigDecimal result = calculation.apply(x, mathContext);
-
-			if (doubleFunction != null && precision > MC_CHECK_DOUBLE.getPrecision() + 4) {
-                BigDecimal doubleResult = toCheck(doubleFunction.apply(xDouble));
-                if (doubleResult != null) {
-                    String doubleDescription = description + " vs. double function ";
-                    assertBigDecimal(doubleDescription, doubleResult, result, MC_CHECK_DOUBLE);
-                }
-			}
-
-			MathContext referenceMathContext = new MathContext(precision * 2 + 20);
-			BigDecimal referenceResult = calculation.apply(x, referenceMathContext);
-			BigDecimal expected = referenceResult.round(mathContext);
-            assertBigDecimal(description, expected, result, mathContext);
-		}
-	}
-
-	private static void assertRandomCalculation(int count, String functionName, Function<Random, Double> xFunction, Function<Random, Double> yFunction, BiFunction<Double, Double, Double> doubleFunction, Function3<BigDecimal, BigDecimal, MathContext, BigDecimal> calculation) {
-		Random random = new Random(1);
-		
-		for (int i = 0; i < count; i++) {
-			int precision = random.nextInt(100) + 1;
-			Double xDouble = xFunction.apply(random);
-			Double yDouble = yFunction.apply(random);
-			
-			BigDecimal x = BigDecimal.valueOf(xDouble);
-			BigDecimal y = BigDecimal.valueOf(yDouble);
-			
-			String description = functionName + "(" + x + "," + y + ")";
-			System.out.println("Testing " + description + " precision=" + precision);
-
-			MathContext mathContext = new MathContext(precision);
-			BigDecimal result = calculation.apply(x, y, mathContext);
-			
-			if (doubleFunction != null && precision > MC_CHECK_DOUBLE.getPrecision() + 4) {
-                BigDecimal doubleResult = toCheck(doubleFunction.apply(xDouble, yDouble));
-                String doubleDescription = description + " vs. double function : " + result;
-                assertBigDecimal(doubleDescription, doubleResult, result, MC_CHECK_DOUBLE);
-			}
-
-            BigDecimal expected = calculation.apply(x, y, new MathContext(precision + 20, mathContext.getRoundingMode()));
-            assertBigDecimal(description, expected, result, mathContext);
-		}
-	}
-
-	private void assertRandomCalculation(int count, String function1Name, String function2Name, BiFunction<Random, MathContext, BigDecimal> xFunction, BiFunction<BigDecimal, MathContext, BigDecimal> calculation1, BiFunction<BigDecimal, MathContext, BigDecimal> calculation2) {
-		Random random = new Random(1);
-		
-		for (int i = 0; i < count; i++) {
-			int numberPrecision = random.nextInt(100) + 1;
-			int calculationPrecision = numberPrecision + 10;
-			
-			MathContext numberMathContext = new MathContext(numberPrecision);
-			BigDecimal x = xFunction.apply(random, numberMathContext);
-
-			MathContext calculationMathContext = new MathContext(calculationPrecision);
-			BigDecimal y1 = calculation1.apply(x, calculationMathContext);
-			BigDecimal y2 = calculation2.apply(x, calculationMathContext);
-
-            String description = "x=" + x + " " + function1Name + "=" + y1 + " " + function2Name + "=" + y2;
-			System.out.println("Testing " + description + " precision=" + numberPrecision);
-
-			assertBigDecimal(description, y1, y2, numberMathContext);
-		}
-	}
-
-    private static boolean assertBigDecimal(BigDecimal expected, BigDecimal actual, MathContext mathContext) {
-	    return assertBigDecimal("", expected, actual, mathContext);
-    }
-
-    private static boolean assertBigDecimal(String description, BigDecimal expected, BigDecimal actual, MathContext mathContext) {
-        MathContext calculationMathContext = new MathContext(mathContext.getPrecision() + 10);
-        BigDecimal error = expected.subtract(actual, calculationMathContext).abs();
-        BigDecimal acceptableError = actual.round(mathContext).ulp();
-
-        String fullDescription = description + " expected=" + expected + " actual=" + actual + " precision=" + mathContext.getPrecision() + " error=" + error + " acceptableError=" + acceptableError;
-        assertTrue(fullDescription, error.compareTo(acceptableError) <= 0);
-        return error.signum() == 0;
-    }
 
     private static BigDecimal randomBigDecimal(Random random, MathContext mathContext) {
 		char[] digits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
@@ -2076,23 +1939,6 @@ ch.obermuhlner.math.big.BigDecimalMathTest > testLog2PowRandom FAILED
         return result;
     }
 
-	private static BigDecimal toCheck(double value) {
-		long longValue = (long) value;
-		if (value == (double)longValue) {
-			return BigDecimal.valueOf(longValue);
-		}
-		
-		if (Double.isFinite(value)) {
-			return BigDecimal.valueOf(value);
-		}
-		
-		return null;
-	}
-
-	private static BigDecimal toCheck(BigDecimal value) {
-		return BigDecimal.valueOf(value.round(MC_CHECK_DOUBLE).doubleValue());
-	}
-
     private int adaptCount(int count) {
 	    switch(TEST_LEVEL) {
             case Fast:
@@ -2105,46 +1951,7 @@ ch.obermuhlner.math.big.BigDecimalMathTest > testLog2PowRandom FAILED
         return count;
     }
 
-    private static TestLevel getTestLevel() {
-	    TestLevel level = TestLevel.Fast;
-
-	    String envTestLevel = System.getenv("BIGDECIMALTEST_LEVEL");
-	    if (envTestLevel != null) {
-            try {
-                level = TestLevel.valueOf(envTestLevel);
-            } catch (IllegalArgumentException ex) {
-                System.err.println("Illegal env var TEST_LEVEL: " + envTestLevel);
-            }
-        }
-
-        return level;
-    }
-
-    private static int getMaxPrecision() {
-        switch(TEST_LEVEL) {
-            case Fast:
-                return 100;
-            case Medium:
-                return 200;
-            case Slow:
-                return 1000;
-        }
-        return 100;
-    }
-
-    private static int getPrecisionStep() {
-        switch(TEST_LEVEL) {
-            case Fast:
-                return 50;
-            case Medium:
-                return 20;
-            case Slow:
-                return 5;
-        }
-        return 30;
-    }
-
-    private static double getRangeStep(double step) {
+    private double getRangeStep(double step) {
         switch(TEST_LEVEL) {
             case Fast:
                 return step;
