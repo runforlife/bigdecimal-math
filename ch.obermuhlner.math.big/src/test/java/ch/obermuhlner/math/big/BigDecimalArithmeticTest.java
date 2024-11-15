@@ -1,5 +1,6 @@
 package ch.obermuhlner.math.big;
 
+import ch.obermuhlner.util.AbstractBigDecimalTest;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -8,7 +9,7 @@ import java.math.MathContext;
 import static ch.obermuhlner.math.big.BigDecimalMathTest.assertThrows;
 import static org.junit.Assert.assertEquals;
 
-public class BigDecimalArithmeticTest {
+public class BigDecimalArithmeticTest extends AbstractBigDecimalTest {
     private static final MathContext D7 = MathContext.DECIMAL32;
     
     @Test
@@ -88,9 +89,5 @@ public class BigDecimalArithmeticTest {
                 )
         );
         assertEquals("Division undefined", actualException2.getMessage());
-    }
-
-    private static BigDecimal BD(String value) {
-        return new BigDecimal(value);
     }
 }

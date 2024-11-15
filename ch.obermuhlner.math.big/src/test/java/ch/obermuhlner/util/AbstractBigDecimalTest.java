@@ -26,6 +26,18 @@ public abstract class AbstractBigDecimalTest {
         R apply(T1 t1, T2 t2, T3 t3);
     }
 
+    public static BigDecimal BD(long value) {
+        return new BigDecimal(value);
+    }
+
+    public static BigDecimal BD(String value) {
+        return new BigDecimal(value);
+    }
+
+    public static BigDecimal BD(String value, MathContext mathContext) {
+        return new BigDecimal(value, mathContext);
+    }
+
     public void assertPrecisionCalculation(Function<MathContext, BigDecimal> precisionCalculation, int startPrecision, int endPrecision) {
         BigDecimal expected = precisionCalculation.apply(new MathContext(endPrecision * 2));
         //System.out.println("reference expected:      " + expected);
