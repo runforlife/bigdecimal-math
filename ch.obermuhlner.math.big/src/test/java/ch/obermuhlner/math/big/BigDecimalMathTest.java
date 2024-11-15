@@ -12,15 +12,16 @@ import java.util.Random;
 
 import static ch.obermuhlner.util.ThreadUtil.runMultiThreaded;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class BigDecimalMathTest extends AbstractBigDecimalTest {
 	@Test
 	public void testInternals() {
-		assertEquals(null, toCheck(Double.NaN));
-		assertEquals(null, toCheck(Double.NEGATIVE_INFINITY));
-		assertEquals(null, toCheck(Double.POSITIVE_INFINITY));
+        assertNull(toCheck(Double.NaN));
+        assertNull(toCheck(Double.NEGATIVE_INFINITY));
+        assertNull(toCheck(Double.POSITIVE_INFINITY));
 
         assertBigDecimal(BD("1.23"), BD("1.23"), new MathContext(3));
         assertBigDecimal(BD("1.23"), BD("1.23"), new MathContext(2));
