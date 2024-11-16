@@ -13,11 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static org.oyushko.big.math.BigDecimalMath.*;
-
 public class GammaExperiments {
 
-	private static final java.math.BigDecimal TWO = BigDecimal.valueOf(2);
+	private static final BigDecimal TWO = BigDecimal.valueOf(2);
 
 	private static final String OUTPUT_DIRECTORY = "docs/markdown/gamma/";
 
