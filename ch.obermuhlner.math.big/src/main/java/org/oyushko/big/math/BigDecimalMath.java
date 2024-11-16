@@ -1187,7 +1187,7 @@ public class BigDecimalMath {
      * @return augend + addend, rounded as necessary.
      */
     public static BigDecimal add(BigDecimal augend, BigDecimal addend, MathContext mathContext) {
-        MathContext mc = BigBasic.buildArithmeticMathContext(mathContext.getPrecision());
+        MathContext mc = BigBasic.buildArithmeticMathContextOrGetFromCache(mathContext.getPrecision());
 
         BigDecimal augendRounded = round(augend, mc);
         BigDecimal addendRounded = round(addend, mc);
@@ -1204,7 +1204,7 @@ public class BigDecimalMath {
      * @return minuend - subtrahend, rounded as necessary.
      */
     public static BigDecimal subtract(BigDecimal minuend, BigDecimal subtrahend, MathContext mathContext) {
-        MathContext mc = BigBasic.buildArithmeticMathContext(mathContext.getPrecision());
+        MathContext mc = BigBasic.buildArithmeticMathContextOrGetFromCache(mathContext.getPrecision());
 
         BigDecimal minuendRounded = round(minuend, mc);
         BigDecimal subtrahendRounded = round(subtrahend, mc);
@@ -1221,7 +1221,7 @@ public class BigDecimalMath {
      * @return multiplicand * multiplier, rounded as necessary.
      */
     public static BigDecimal multiply(BigDecimal multiplicand, BigDecimal multiplier, MathContext mathContext) {
-        MathContext mc = BigBasic.buildArithmeticMathContext(mathContext.getPrecision());
+        MathContext mc = BigBasic.buildArithmeticMathContextOrGetFromCache(mathContext.getPrecision());
 
         BigDecimal multiplicandRounded = round(multiplicand, mc);
         BigDecimal multiplierRounded = round(multiplier, mc);
@@ -1238,7 +1238,7 @@ public class BigDecimalMath {
      * @return dividend / divisor, rounded as necessary.
      */
     public static BigDecimal divide(BigDecimal dividend, BigDecimal divisor, MathContext mathContext) {
-        MathContext mc = BigBasic.buildArithmeticMathContext(mathContext.getPrecision());
+        MathContext mc = BigBasic.buildArithmeticMathContextOrGetFromCache(mathContext.getPrecision());
 
         BigDecimal dividendRounded = round(dividend, mc);
         BigDecimal divisorRounded = round(divisor, mc);

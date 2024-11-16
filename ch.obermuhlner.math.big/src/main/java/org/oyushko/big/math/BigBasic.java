@@ -574,7 +574,7 @@ public class BigBasic {
     private static final Object MATH_CONTEXT_WITH_HALF_EVEN_CACHE_LOCK = new Object();
     private static final int ARITHMETIC_RESERVE_PRECISION = 5;
 
-    static MathContext buildArithmeticMathContext(int precision) {
+    static MathContext buildArithmeticMathContextOrGetFromCache(int precision) {
         synchronized (MATH_CONTEXT_WITH_HALF_EVEN_CACHE_LOCK) {
             int arithmeticPrecision = precision + ARITHMETIC_RESERVE_PRECISION;
             if (arithmeticPrecision == mathContextWithHalfEvenPrecision) {
