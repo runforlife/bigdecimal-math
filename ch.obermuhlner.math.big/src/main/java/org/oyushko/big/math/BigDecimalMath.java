@@ -27,17 +27,8 @@ public class BigDecimalMath {
     private static final BigDecimal ONE_HUNDRED_EIGHTY = valueOf(180);
     private static final BigDecimal DOUBLE_MAX_VALUE = BigDecimal.valueOf(Double.MAX_VALUE);
     private static final BigDecimal ROUGHLY_TWO_PI = new BigDecimal("3.141592653589793").multiply(TWO);
-    static final int EXPECTED_INITIAL_PRECISION = 15;
-    private static final BigDecimal[] factorialCache = new BigDecimal[100];
 
-    static {
-        BigDecimal result = ONE;
-        factorialCache[0] = result;
-        for (int i = 1; i < factorialCache.length; i++) {
-            result = result.multiply(valueOf(i));
-            factorialCache[i] = result;
-        }
-    }
+    static final int EXPECTED_INITIAL_PRECISION = 15;
 
     /**
      * Creates a {@link BigDecimal} from the specified <code>String</code> representation.
@@ -312,6 +303,9 @@ public class BigDecimalMath {
         return divide(BigDecimal.ONE, x, mathContext);
     }
 
+    private static volatile BigDecimal[] factorialCache = null;
+    private static final Object FACTORIAL_CACHE_LOCK = new Object();
+
     /**
      * Calculates the factorial of the specified integer argument.
      *
@@ -325,6 +319,21 @@ public class BigDecimalMath {
         if (n < 0) {
             throw new ArithmeticException("Illegal factorial(n) for n < 0: n = " + n);
         }
+
+        if (factorialCache == null) {
+            synchronized (FACTORIAL_CACHE_LOCK) {
+                if (factorialCache == null) {
+                    factorialCache = new BigDecimal[100];
+                    BigDecimal result = ONE;
+                    factorialCache[0] = result;
+                    for (int i = 1; i < factorialCache.length; i++) {
+                        result = result.multiply(valueOf(i));
+                        factorialCache[i] = result;
+                    }
+                }
+            }
+        }
+
         if (n < factorialCache.length) {
             return factorialCache[n];
         }

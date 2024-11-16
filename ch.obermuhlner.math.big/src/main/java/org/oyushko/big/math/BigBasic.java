@@ -19,8 +19,6 @@ public class BigBasic {
     private static final BigDecimal ONE_HALF = valueOf(0.5);
     private static final BigDecimal TWO = valueOf(2);
 
-    private static final int ARITHMETIC_RESERVE_PRECISION = 5;
-
     private static final Map<Integer, List<BigDecimal>> SPOUGE_FACTORIAL_CONSTANTS_CACHE = new HashMap<>();
     private static final Object SPOUGE_FACTORIAL_CONSTANTS_CACHE_LOCK = new Object();
 
@@ -571,19 +569,20 @@ public class BigBasic {
         return BigDecimalMath.round(result, mathContext);
     }
 
-    private static volatile long MATH_CONTEXT_WITH_HALF_EVEN_PRECISION = -1;
-    private static volatile MathContext MATH_CONTEXT_WITH_HALF_EVEN_CACHE = null;
+    private static volatile long mathContextWithHalfEvenPrecision = -1;
+    private static volatile MathContext mathContextWithHalfEvenCache = null;
     private static final Object MATH_CONTEXT_WITH_HALF_EVEN_CACHE_LOCK = new Object();
+    private static final int ARITHMETIC_RESERVE_PRECISION = 5;
 
     static MathContext buildArithmeticMathContext(int precision) {
         synchronized (MATH_CONTEXT_WITH_HALF_EVEN_CACHE_LOCK) {
             int arithmeticPrecision = precision + ARITHMETIC_RESERVE_PRECISION;
-            if (arithmeticPrecision == MATH_CONTEXT_WITH_HALF_EVEN_PRECISION) {
-                return MATH_CONTEXT_WITH_HALF_EVEN_CACHE;
+            if (arithmeticPrecision == mathContextWithHalfEvenPrecision) {
+                return mathContextWithHalfEvenCache;
             } else {
                 MathContext mc = new MathContext(arithmeticPrecision, RoundingMode.HALF_EVEN);
-                MATH_CONTEXT_WITH_HALF_EVEN_PRECISION = arithmeticPrecision;
-                MATH_CONTEXT_WITH_HALF_EVEN_CACHE = mc;
+                mathContextWithHalfEvenPrecision = arithmeticPrecision;
+                mathContextWithHalfEvenCache = mc;
                 return mc;
             }
         }
