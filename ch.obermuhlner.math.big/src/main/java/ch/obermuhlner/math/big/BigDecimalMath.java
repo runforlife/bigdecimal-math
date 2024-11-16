@@ -1,9 +1,11 @@
 package ch.obermuhlner.math.big;
 
-import static java.math.BigDecimal.ONE;
-import static java.math.BigDecimal.TEN;
-import static java.math.BigDecimal.ZERO;
-import static java.math.BigDecimal.valueOf;
+import ch.obermuhlner.math.big.internal.AsinCalculator;
+import ch.obermuhlner.math.big.internal.CosCalculator;
+import ch.obermuhlner.math.big.internal.CoshCalculator;
+import ch.obermuhlner.math.big.internal.ExpCalculator;
+import ch.obermuhlner.math.big.internal.SinCalculator;
+import ch.obermuhlner.math.big.internal.SinhCalculator;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -15,13 +17,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ch.obermuhlner.math.big.exception.UnableToFindFractionRuntimeException;
-import ch.obermuhlner.math.big.internal.AsinCalculator;
-import ch.obermuhlner.math.big.internal.CosCalculator;
-import ch.obermuhlner.math.big.internal.CoshCalculator;
-import ch.obermuhlner.math.big.internal.ExpCalculator;
-import ch.obermuhlner.math.big.internal.SinCalculator;
-import ch.obermuhlner.math.big.internal.SinhCalculator;
+import static java.math.BigDecimal.ONE;
+import static java.math.BigDecimal.TEN;
+import static java.math.BigDecimal.ZERO;
+import static java.math.BigDecimal.valueOf;
 
 /**
  * Provides advanced functions operating on {@link BigDecimal}s.
@@ -1816,13 +1815,13 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 	 * @param mathContext the {@link MathContext} used for the calculation and result.
 	 * @return {@link BigIntegerFraction}
 	 * @throws IllegalArgumentException
-	 * @throws UnableToFindFractionRuntimeException
+	 * @throws ArithmeticException
 	 */
 	public static BigIntegerFraction convertToFraction(BigDecimal value,
 													   BigDecimal maxNumeratorValue,
 													   BigDecimal maxDenominatorValue,
 													   int tolerance,
-													   MathContext mathContext) throws IllegalArgumentException, UnableToFindFractionRuntimeException {
+													   MathContext mathContext) throws IllegalArgumentException, ArithmeticException {
 		int mcPrecision = mathContext.getPrecision();
 		if (tolerance >= mcPrecision) {
 			throw new IllegalArgumentException("Tolerance must be less than MathContext precision");
@@ -1835,7 +1834,7 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 		BigDecimal remainder = value.remainder(BigDecimal.ONE, mathContext);
 		if (remainder.compareTo(BigDecimal.ZERO) == 0) {
 			if (value.compareTo(maxNumeratorValue) > 0) {
-				throw new UnableToFindFractionRuntimeException("Unable to find numerator for " + value + " value because it reached the max numerator limit " + maxNumeratorValue);
+				throw new ArithmeticException("Unable to find numerator for " + value + " value because it reached the max numerator limit " + maxNumeratorValue);
 			}
 			BigInteger numerator = value.toBigInteger();
 			return new BigIntegerFraction(positive, numerator, BigInteger.ONE);
@@ -1856,14 +1855,14 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 			BigDecimal aux = pn1;
 			pn1 = add((multiply(a, pn1, mathContext)), pn2, mathContext);
 			if (pn1.compareTo(maxNumeratorValue) > 0) {
-				throw new UnableToFindFractionRuntimeException("Unable to find numerator for " + value + " value because it reached the max numerator limit " + maxNumeratorValue);
+				throw new ArithmeticException("Unable to find numerator for " + value + " value because it reached the max numerator limit " + maxNumeratorValue);
 			}
 
 			pn2 = aux;
 			aux = qn1;
 			qn1 = add(multiply(a, qn1, mathContext), qn2, mathContext);
 			if (qn1.compareTo(maxDenominatorValue) > 0) {
-				throw new UnableToFindFractionRuntimeException("Unable to find denominator for " + value + " value because it reached the max denominator limit " + maxDenominatorValue);
+				throw new ArithmeticException("Unable to find denominator for " + value + " value because it reached the max denominator limit " + maxDenominatorValue);
 			}
 
 			BigDecimal numeratorDivideDenominator = divide(pn1, qn1, mathContext);
@@ -1880,11 +1879,11 @@ System.out.println(BigDecimalMath.roundWithTrailingZeroes(new BigDecimal("0.0000
 
 		BigInteger numerator = pn1.toBigInteger();
 		if (new BigDecimal(numerator).compareTo(pn1) != 0) {
-			throw new UnableToFindFractionRuntimeException("Numerator is not an Integer: " + pn1);
+			throw new ArithmeticException("Numerator is not an Integer: " + pn1);
 		}
 		BigInteger denominator = qn1.toBigInteger();
 		if (new BigDecimal(denominator).compareTo(qn1) != 0) {
-			throw new UnableToFindFractionRuntimeException("Denominator is not an Integer: " + qn1);
+			throw new ArithmeticException("Denominator is not an Integer: " + qn1);
 		}
 
 		return new BigIntegerFraction(positive, numerator, denominator);

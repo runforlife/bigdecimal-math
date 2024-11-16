@@ -7,6 +7,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public abstract class AbstractBigDecimalTest {
     public static final MathContext MC = MathContext.DECIMAL128;
@@ -139,7 +140,7 @@ public abstract class AbstractBigDecimalTest {
             assertBigDecimal(description, y1, y2, numberMathContext);
         }
     }
-    
+
     public boolean assertBigDecimal(BigDecimal expected, BigDecimal actual, MathContext mathContext) {
         return assertBigDecimal("", expected, actual, mathContext);
     }
@@ -154,9 +155,47 @@ public abstract class AbstractBigDecimalTest {
         return error.signum() == 0;
     }
 
+    public static BigDecimal randomBigDecimal(Random random, MathContext mathContext) {
+        char[] digits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+        StringBuilder stringNumber = new StringBuilder();
+        stringNumber.append("0.");
+
+        for (int i = 0; i < mathContext.getPrecision(); i++) {
+            stringNumber.append(digits[random.nextInt(digits.length)]);
+        }
+
+        return BD(stringNumber.toString(), mathContext);
+    }
+
+    public static BigDecimal randomBigDecimalWithExponent(Random random, MathContext mathContext) {
+        int exponent = random.nextInt(200) - 100;
+        return randomBigDecimal(random, mathContext).multiply(BD("1E" + exponent, mathContext), mathContext);
+    }
+
+    public static Exception assertThrows(Class<? extends Exception> exceptionClass, Runnable runnable) {
+        return assertThrows(exceptionClass, null, runnable);
+    }
+
+    public static Exception assertThrows(Class<? extends Exception> exceptionClass, String message, Runnable runnable) {
+        Exception result = null;
+        try {
+            runnable.run();
+            fail("Expected: " + exceptionClass.getName());
+        } catch (Exception exception) {
+            if (!exceptionClass.isAssignableFrom(exception.getClass())) {
+                fail("Expected: " + exceptionClass.getName());
+            }
+            if (message != null && !message.equals(exception.getMessage())) {
+                fail("Expected: " + exceptionClass.getName() + " with message: \"" + message + "\" but received message: \"" + exception.getMessage() + "\"");
+            }
+            result = exception;
+        }
+        return result;
+    }
+
     public BigDecimal toCheck(double value) {
         long longValue = (long) value;
-        if (value == (double)longValue) {
+        if (value == (double) longValue) {
             return BigDecimal.valueOf(longValue);
         }
 
@@ -172,7 +211,7 @@ public abstract class AbstractBigDecimalTest {
     }
 
     public int getPrecisionStep() {
-        switch(TEST_LEVEL) {
+        switch (TEST_LEVEL) {
             case Fast:
                 return 50;
             case Medium:
@@ -184,7 +223,7 @@ public abstract class AbstractBigDecimalTest {
     }
 
     private int getMaxPrecision() {
-        switch(TEST_LEVEL) {
+        switch (TEST_LEVEL) {
             case Fast:
                 return 100;
             case Medium:
@@ -193,6 +232,30 @@ public abstract class AbstractBigDecimalTest {
                 return 1000;
         }
         return 100;
+    }
+
+    public int adaptCount(int count) {
+        switch(TEST_LEVEL) {
+            case Fast:
+                return count;
+            case Medium:
+                return count * 10;
+            case Slow:
+                return count * 100;
+        }
+        return count;
+    }
+
+    public double getRangeStep(double step) {
+        switch(TEST_LEVEL) {
+            case Fast:
+                return step;
+            case Medium:
+                return step / 2;
+            case Slow:
+                return step / 10;
+        }
+        return step;
     }
 
     private TestLevel getTestLevel() {

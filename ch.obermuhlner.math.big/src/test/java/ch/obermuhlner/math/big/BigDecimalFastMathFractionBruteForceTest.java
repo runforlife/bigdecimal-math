@@ -15,8 +15,6 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
-import ch.obermuhlner.math.big.exception.UnableToFindFractionRuntimeException;
-
 public class BigDecimalFastMathFractionBruteForceTest {
     public static final BigDecimal MAX_DECIMAL_22_DIGITS = new BigDecimal("9999999999999999999999");
     public static final int TOLERANCE = 12;
@@ -93,7 +91,7 @@ public class BigDecimalFastMathFractionBruteForceTest {
                     TOLERANCE,
                     MathContext.DECIMAL128
             );
-        } catch (UnableToFindFractionRuntimeException e) {
+        } catch (ArithmeticException e) {
             return;
         } catch (Exception e) {
             System.out.println("a: " + a + ", b: " + b + ", i: " + i);
