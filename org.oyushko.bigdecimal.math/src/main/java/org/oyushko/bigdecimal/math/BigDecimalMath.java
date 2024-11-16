@@ -454,10 +454,8 @@ public class BigDecimalMath {
         BigBasic.checkMathContext(mathContext);
         if (x.signum() == 0) {
             switch (y.signum()) {
-                case 0:
-                    return round(ONE, mathContext);
-                case 1:
-                    return round(ZERO, mathContext);
+                case 0 : return round(ONE, mathContext);
+                case 1 : return round(ZERO, mathContext);
             }
         }
 
@@ -476,7 +474,7 @@ public class BigDecimalMath {
 
         // x^y = exp(y*log(x))
         MathContext mc = new MathContext(mathContext.getPrecision() + 6, mathContext.getRoundingMode());
-        BigDecimal result = exp(multiply(y, log(x, mc), mc), mc);
+        BigDecimal result = exp(y.multiply(log(x, mc), mc), mc);
 
         return round(result, mathContext);
     }
@@ -514,13 +512,13 @@ public class BigDecimalMath {
         while (y > 0) {
             if ((y & 1) == 1) {
                 // odd exponent -> multiply result with x
-                result = multiply(result, x, mc);
+                result = result.multiply(x, mc);
                 y -= 1;
             }
 
             if (y > 0) {
                 // even exponent -> square x
-                x = multiply(x, x, mc);
+                x = x.multiply(x, mc);
             }
 
             y >>= 1;
@@ -617,7 +615,10 @@ public class BigDecimalMath {
         if (isDoubleValue(x) && isDoubleValue(n)) {
             double initialResult = Math.pow(x.doubleValue(), 1.0 / n.doubleValue());
             if (Double.isFinite(initialResult)) {
-                return BigBasic.rootUsingNewtonRaphson(x, n, BigDecimal.valueOf(initialResult), mathContext);
+                long start = System.nanoTime();
+                BigDecimal bigDecimal = BigBasic.rootUsingNewtonRaphson(x, n, valueOf(initialResult), mathContext);
+                System.out.println("taken: " + (System.nanoTime() - start));
+                return bigDecimal;
             }
         }
 

@@ -53,7 +53,7 @@ public abstract class AbstractBigDecimalTest {
         int precision = startPrecision;
         while (precision <= endPrecision) {
             MathContext mathContext = new MathContext(precision);
-//            System.out.println("Testing precision=" + precision);
+            System.out.println("Testing precision=" + precision);
             assertBigDecimal(
                     "precision=" + precision,
                     expected.round(mathContext),
@@ -73,7 +73,7 @@ public abstract class AbstractBigDecimalTest {
 
             String description = functionName + "(" + x + ")";
 
-//            System.out.println("Testing " + description + " precision=" + precision);
+            System.out.println("Testing " + description + " precision=" + precision);
             MathContext mathContext = new MathContext(precision);
             BigDecimal result = calculation.apply(x, mathContext);
 
@@ -104,7 +104,7 @@ public abstract class AbstractBigDecimalTest {
             BigDecimal y = BigDecimal.valueOf(yDouble);
 
             String description = functionName + "(" + x + "," + y + ")";
-//            System.out.println("Testing " + description + " precision=" + precision);
+            System.out.println("Testing " + description + " precision=" + precision);
 
             MathContext mathContext = new MathContext(precision);
             BigDecimal result = calculation.apply(x, y, mathContext);
@@ -135,7 +135,7 @@ public abstract class AbstractBigDecimalTest {
             BigDecimal y2 = calculation2.apply(x, calculationMathContext);
 
             String description = "x=" + x + " " + function1Name + "=" + y1 + " " + function2Name + "=" + y2;
-//            System.out.println("Testing " + description + " precision=" + numberPrecision);
+            System.out.println("Testing " + description + " precision=" + numberPrecision);
 
             assertBigDecimal(description, y1, y2, numberMathContext);
         }

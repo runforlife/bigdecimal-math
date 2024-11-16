@@ -220,25 +220,25 @@ public class BigBasic {
         }
 
         if (integerY.signum() < 0) {
-            return BigDecimalMath.divide(ONE, powInteger(x, integerY.negate(), mathContext), mathContext);
+            return ONE.divide(powInteger(x, integerY.negate(), mathContext), mathContext);
         }
 
         MathContext mc = new MathContext(Math.max(mathContext.getPrecision(), -integerY.scale()) + 30, mathContext.getRoundingMode());
 
         BigDecimal result = ONE;
         while (integerY.signum() > 0) {
-            BigDecimal halfY = BigDecimalMath.divide(integerY, TWO, mc);
+            BigDecimal halfY = integerY.divide(TWO, mc);
 
             if (BigDecimalMath.fractionalPart(halfY).signum() != 0) {
                 // odd exponent -> multiply result with x
-                result = BigDecimalMath.multiply(result, x, mc);
-                integerY = BigDecimalMath.subtract(integerY, ONE, mc);
-                halfY = BigDecimalMath.divide(integerY, TWO, mc);
+                result = result.multiply(x, mc);
+                integerY = integerY.subtract(ONE);
+                halfY = integerY.divide(TWO, mc);
             }
 
             if (halfY.signum() > 0) {
                 // even exponent -> square x
-                x = BigDecimalMath.multiply(x, x, mc);
+                x = x.multiply(x, mc);
             }
 
             integerY = halfY;
@@ -250,13 +250,13 @@ public class BigBasic {
     static BigDecimal rootUsingNewtonRaphson(BigDecimal x, BigDecimal n, BigDecimal initialResult, MathContext mathContext) {
         if (n.compareTo(BigDecimal.ONE) <= 0) {
             MathContext mc = new MathContext(mathContext.getPrecision() + 6, mathContext.getRoundingMode());
-            return BigDecimalMath.pow(x, BigDecimalMath.divide(BigDecimal.ONE, n, mc), mathContext);
+            return BigDecimalMath.pow(x, BigDecimal.ONE.divide(n, mc), mathContext);
         }
 
         int maxPrecision = mathContext.getPrecision() * 2;
         BigDecimal acceptableError = ONE.movePointLeft(mathContext.getPrecision() + 1);
 
-        BigDecimal nMinus1 = BigDecimalMath.subtract(n, ONE, mathContext);
+        BigDecimal nMinus1 = n.subtract(ONE);
         BigDecimal result = initialResult;
         int adaptivePrecision = 12;
 
@@ -269,8 +269,8 @@ public class BigBasic {
                 }
                 MathContext mc = new MathContext(adaptivePrecision, mathContext.getRoundingMode());
 
-                step = BigDecimalMath.divide(BigDecimalMath.subtract(BigDecimalMath.divide(x, BigDecimalMath.pow(result, nMinus1, mc), mc), result, mc), n, mc);
-                result = BigDecimalMath.add(result, step, mc);
+                step = x.divide(BigDecimalMath.pow(result, nMinus1, mc), mc).subtract(result).divide(n, mc);
+                result = result.add(step);
             } while (adaptivePrecision < maxPrecision || step.abs().compareTo(acceptableError) > 0);
         }
 
@@ -292,13 +292,15 @@ public class BigBasic {
             result = BigDecimal.valueOf(Math.log(doubleX));
             adaptivePrecision = BigDecimalMath.EXPECTED_INITIAL_PRECISION;
         } else {
-            result = BigDecimalMath.divide(x, TWO, mathContext);
+            result = x.divide(TWO, mathContext);
             adaptivePrecision = 1;
         }
 
         BigDecimal step;
 
+        int count = 0;
         do {
+            count++;
             adaptivePrecision *= 3;
             if (adaptivePrecision > maxPrecision) {
                 adaptivePrecision = maxPrecision;
@@ -472,28 +474,28 @@ public class BigBasic {
         BigDecimal result = ZERO;
 
         if (factorOfTwo > 0) {
-            correctedX = BigDecimalMath.divide(correctedX, valueOf(powerOfTwo), mc);
-            result = BigDecimalMath.add(result, BigDecimalMath.multiply(logTwo(mcDouble), valueOf(factorOfTwo), mc), mc);
+            correctedX = correctedX.divide(valueOf(powerOfTwo), mc);
+            result = result.add(logTwo(mcDouble).multiply(valueOf(factorOfTwo), mc));
         }
         else if (factorOfTwo < 0) {
-            correctedX = BigDecimalMath.multiply(correctedX, valueOf(powerOfTwo), mc);
-            result = BigDecimalMath.subtract(result, BigDecimalMath.multiply(logTwo(mcDouble), valueOf(-factorOfTwo), mc), mc);
+            correctedX = correctedX.multiply(valueOf(powerOfTwo), mc);
+            result = result.subtract(logTwo(mcDouble).multiply(valueOf(-factorOfTwo), mc));
         }
 
         if (factorOfThree > 0) {
-            correctedX = BigDecimalMath.divide(correctedX, valueOf(powerOfThree), mc);
-            result = BigDecimalMath.add(result, BigDecimalMath.multiply(logThree(mcDouble), valueOf(factorOfThree), mc), mc);
+            correctedX = correctedX.divide(valueOf(powerOfThree), mc);
+            result = result.add(logThree(mcDouble).multiply(valueOf(factorOfThree), mc));
         }
         else if (factorOfThree < 0) {
-            correctedX = BigDecimalMath.multiply(correctedX, valueOf(powerOfThree), mc);
-            result = BigDecimalMath.subtract(result, BigDecimalMath.multiply(logThree(mcDouble), valueOf(-factorOfThree), mc), mc);
+            correctedX = correctedX.multiply(valueOf(powerOfThree), mc);
+            result = result.subtract(logThree(mcDouble).multiply(valueOf(-factorOfThree), mc));
         }
 
         if (x == correctedX && result == ZERO) {
             return logUsingNewton(x, mathContext);
         }
 
-        result = BigDecimalMath.add(result, logUsingNewton(correctedX, mc), mc);
+        result = result.add(logUsingNewton(correctedX, mc), mc);
 
         return result;
     }
