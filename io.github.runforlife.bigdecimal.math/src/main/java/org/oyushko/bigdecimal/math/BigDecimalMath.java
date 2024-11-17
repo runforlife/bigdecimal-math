@@ -697,7 +697,7 @@ public class BigDecimalMath {
     }
 
     private static volatile BigDecimal piCache;
-    private static final Object piCacheLock = new Object();
+    private static final Object PI_CACHE_LOCK = new Object();
 
     /**
      * Returns the number pi.
@@ -712,7 +712,7 @@ public class BigDecimalMath {
         BigBasic.checkMathContext(mathContext);
         BigDecimal result;
 
-        synchronized (piCacheLock) {
+        synchronized (PI_CACHE_LOCK) {
             if (piCache != null && mathContext.getPrecision() <= piCache.precision()) {
                 result = piCache;
             } else {
@@ -725,7 +725,7 @@ public class BigDecimalMath {
     }
 
     private static volatile BigDecimal eCache;
-    private static final Object eCacheLock = new Object();
+    private static final Object E_CACHE_LOCK = new Object();
 
     /**
      * Returns the number e.
@@ -740,7 +740,7 @@ public class BigDecimalMath {
         BigBasic.checkMathContext(mathContext);
         BigDecimal result;
 
-        synchronized (eCacheLock) {
+        synchronized (E_CACHE_LOCK) {
             if (eCache != null && mathContext.getPrecision() <= eCache.precision()) {
                 result = eCache;
             } else {
