@@ -1,3 +1,5 @@
+This project is a clone of the original [big-math] with additional functions.
+
 [![Build Status](https://api.travis-ci.org/eobermuhlner/big-math.svg?branch=master)](https://travis-ci.org/eobermuhlner/big-math)
 [![Code Coverage](https://badgen.net/codecov/c/github/eobermuhlner/big-math)](https://codecov.io/gh/eobermuhlner/big-math)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=big-math&metric=alert_status)](https://sonarcloud.io/dashboard?id=big-math)

@@ -155,16 +155,16 @@ public class BigBasic {
                 List<BigDecimal> constants = new ArrayList<>(a);
                 MathContext mc = new MathContext(a * 15 / 10);
 
-                BigDecimal c0 = BigDecimalMath.sqrt(BigDecimalMath.multiply(BigDecimalMath.pi(mc), TWO, mc), mc);
+                BigDecimal c0 = BigDecimalMath.sqrt(BigDecimalMath.pi(mc).multiply(TWO, mc), mc);
                 constants.add(c0);
 
                 boolean negative = false;
                 for (int k = 1; k < a; k++) {
                     BigDecimal bigK = BigDecimal.valueOf(k);
                     long deltaAK = (long)a - k;
-                    BigDecimal ck = BigDecimalMath.pow(BigDecimal.valueOf(deltaAK), BigDecimalMath.subtract(bigK, ONE_HALF, mc), mc);
-                    ck = BigDecimalMath.multiply(ck, BigDecimalMath.exp(BigDecimal.valueOf(deltaAK), mc), mc);
-                    ck = BigDecimalMath.divide(ck, BigDecimalMath.factorial(k - 1), mc);
+                    BigDecimal ck = BigDecimalMath.pow(BigDecimal.valueOf(deltaAK), bigK.subtract(ONE_HALF), mc);
+                    ck = ck.multiply(BigDecimalMath.exp(BigDecimal.valueOf(deltaAK), mc), mc);
+                    ck = ck.divide(BigDecimalMath.factorial(k - 1), mc);
                     if (negative) {
                         ck = ck.negate();
                     }
@@ -298,9 +298,7 @@ public class BigBasic {
 
         BigDecimal step;
 
-        int count = 0;
         do {
-            count++;
             adaptivePrecision *= 3;
             if (adaptivePrecision > maxPrecision) {
                 adaptivePrecision = maxPrecision;
@@ -308,9 +306,9 @@ public class BigBasic {
             MathContext mc = new MathContext(adaptivePrecision, mathContext.getRoundingMode());
 
             BigDecimal expY = BigDecimalMath.exp(result, mc);
-            step = BigDecimalMath.divide(BigDecimalMath.multiply(TWO, BigDecimalMath.subtract(x, expY, mc), mc), BigDecimalMath.add(x, expY, mc), mc);
+            step = TWO.multiply(x.subtract(expY)).divide(x.add(expY), mc);
             //System.out.println("  step " + step + " adaptivePrecision=" + adaptivePrecision);
-            result = BigDecimalMath.add(result, step, mc);
+            result = result.add(step);
         } while (adaptivePrecision < maxPrecision || step.abs().compareTo(acceptableError) > 0);
 
         return result;
@@ -382,7 +380,7 @@ public class BigBasic {
 
         BigDecimal result = logUsingTwoThree(mantissa, mc);
         if (exponent != 0) {
-            result = BigDecimalMath.add(result, BigDecimalMath.multiply(valueOf(exponent), logTen(mcDouble), mc), mc);
+            result = result.add(valueOf(exponent).multiply(logTen(mcDouble), mc));
         }
         return result;
     }
@@ -507,7 +505,7 @@ public class BigBasic {
         final BigDecimal value640320 = BigDecimal.valueOf(640320);
         final BigDecimal value13591409 = BigDecimal.valueOf(13591409);
         final BigDecimal value545140134 = BigDecimal.valueOf(545140134);
-        final BigDecimal valueDivisor = BigDecimalMath.divide(value640320.pow(3), value24, mc);
+        final BigDecimal valueDivisor = value640320.pow(3).divide(value24, mc);
 
         BigDecimal sumA = BigDecimal.ONE;
         BigDecimal sumB = BigDecimal.ZERO;
@@ -524,20 +522,20 @@ public class BigBasic {
             dividendTerm1 += -6;
             dividendTerm2 += 2;
             dividendTerm3 += 6;
-            BigDecimal dividend = BigDecimalMath.multiply(BigDecimalMath.multiply(BigDecimal.valueOf(dividendTerm1), BigDecimal.valueOf(dividendTerm2), mc), BigDecimal.valueOf(dividendTerm3), mc);
+            BigDecimal dividend = BigDecimal.valueOf(dividendTerm1).multiply(BigDecimal.valueOf(dividendTerm2)).multiply(BigDecimal.valueOf(dividendTerm3));
             kPower3 = valueK.pow(3);
-            BigDecimal divisor = BigDecimalMath.multiply(kPower3, valueDivisor, mc);
-            a = BigDecimalMath.divide(BigDecimalMath.multiply(a, dividend, mc), divisor, mc);
-            BigDecimal b = BigDecimalMath.multiply(valueK, a, mc);
+            BigDecimal divisor = kPower3.multiply(valueDivisor, mc);
+            a = a.multiply(dividend).divide(divisor, mc);
+            BigDecimal b = valueK.multiply(a, mc);
 
-            sumA = BigDecimalMath.add(sumA, a, mc);
-            sumB = BigDecimalMath.add(sumB, b, mc);
+            sumA = sumA.add(a);
+            sumB = sumB.add(b);
         }
 
         final BigDecimal value426880 = BigDecimal.valueOf(426880);
         final BigDecimal value10005 = BigDecimal.valueOf(10005);
-        final BigDecimal factor = BigDecimalMath.multiply(value426880, BigDecimalMath.sqrt(value10005, mc), mc);
-        BigDecimal pi = BigDecimalMath.divide(factor, BigDecimalMath.add(BigDecimalMath.multiply(value13591409, sumA, mc), BigDecimalMath.multiply(value545140134, sumB, mc), mc), mc);
+        final BigDecimal factor = value426880.multiply(BigDecimalMath.sqrt(value10005, mc));
+        BigDecimal pi = factor.divide(value13591409.multiply(sumA, mc).add(value545140134.multiply(sumB, mc)), mc);
 
         return BigDecimalMath.round(pi, mathContext);
     }
@@ -549,11 +547,11 @@ public class BigBasic {
             return expTaylor(x, mathContext);
         }
 
-        BigDecimal fractionalPart = BigDecimalMath.subtract(x, integralPart, mathContext);
+        BigDecimal fractionalPart = x.subtract(integralPart);
 
         MathContext mc = new MathContext(mathContext.getPrecision() + 10, mathContext.getRoundingMode());
 
-        BigDecimal z = BigDecimalMath.add(ONE, BigDecimalMath.divide(fractionalPart, integralPart, mc), mc);
+        BigDecimal z = ONE.add(fractionalPart.divide(integralPart, mc));
         BigDecimal t = expTaylor(z, mc);
 
         BigDecimal result = BigDecimalMath.pow(t, integralPart.longValueExact(), mc);
@@ -564,30 +562,11 @@ public class BigBasic {
     static BigDecimal expTaylor(BigDecimal x, MathContext mathContext) {
         MathContext mc = new MathContext(mathContext.getPrecision() + 6, mathContext.getRoundingMode());
 
-        x = BigDecimalMath.divide(x, valueOf(256), mc);
+        x = x.divide(valueOf(256), mc);
 
         BigDecimal result = ExpCalculator.INSTANCE.calculate(x, mc);
         result = BigDecimalMath.pow(result, 256, mc);
         return BigDecimalMath.round(result, mathContext);
-    }
-
-    private static volatile long mathContextWithHalfEvenPrecision = -1;
-    private static volatile MathContext mathContextWithHalfEvenCache = null;
-    private static final Object MATH_CONTEXT_WITH_HALF_EVEN_CACHE_LOCK = new Object();
-    private static final int ARITHMETIC_RESERVE_PRECISION = 5;
-
-    static MathContext buildArithmeticMathContextOrGetFromCache(int precision) {
-        synchronized (MATH_CONTEXT_WITH_HALF_EVEN_CACHE_LOCK) {
-            int arithmeticPrecision = precision + ARITHMETIC_RESERVE_PRECISION;
-            if (arithmeticPrecision == mathContextWithHalfEvenPrecision) {
-                return mathContextWithHalfEvenCache;
-            } else {
-                MathContext mc = new MathContext(arithmeticPrecision, RoundingMode.HALF_EVEN);
-                mathContextWithHalfEvenPrecision = arithmeticPrecision;
-                mathContextWithHalfEvenCache = mc;
-                return mc;
-            }
-        }
     }
 
     static void checkMathContext(MathContext mathContext) {

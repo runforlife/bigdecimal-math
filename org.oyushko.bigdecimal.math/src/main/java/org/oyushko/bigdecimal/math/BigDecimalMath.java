@@ -300,7 +300,7 @@ public class BigDecimalMath {
      *                             non-terminating decimal expansion.
      */
     public static BigDecimal reciprocal(BigDecimal x, MathContext mathContext) {
-        return divide(BigDecimal.ONE, x, mathContext);
+        return BigDecimal.ONE.divide(x, mathContext);
     }
 
     private static volatile BigDecimal[] factorialCache = null;
@@ -385,13 +385,13 @@ public class BigDecimalMath {
         BigDecimal factor = constants.get(0);
         for (int k = 1; k < a; k++) {
             BigDecimal bigK = BigDecimal.valueOf(k);
-            factor = factor.add(divide(constants.get(k), add(x, bigK, mc), mc));
+            factor = factor.add(constants.get(k).divide(x.add(bigK), mc));
             negative = !negative;
         }
 
-        BigDecimal result = pow(add(x, bigA, mc), add(x, BigDecimal.valueOf(0.5), mc), mc);
-        result = multiply(result, exp(subtract(x.negate(), bigA, mc), mc), mc);
-        result = multiply(result, factor, mc);
+        BigDecimal result = pow(x.add(bigA), x.add(BigDecimal.valueOf(0.5)), mc);
+        result = result.multiply(exp(x.negate().subtract(bigA), mc));
+        result = result.multiply(factor);
 
         return round(result, mathContext);
     }
@@ -412,7 +412,7 @@ public class BigDecimalMath {
      * @see #factorial(BigDecimal, MathContext)
      */
     public static BigDecimal gamma(BigDecimal x, MathContext mathContext) {
-        return factorial(subtract(x, ONE, mathContext), mathContext);
+        return factorial(x.subtract(ONE), mathContext);
     }
 
     /**
@@ -556,28 +556,27 @@ public class BigDecimalMath {
             result = BigDecimal.valueOf(Math.sqrt(x.doubleValue()));
             adaptivePrecision = EXPECTED_INITIAL_PRECISION;
         } else {
-            result = multiply(x, ONE_HALF, mathContext);
+            result = x.multiply(ONE_HALF, mathContext);
             adaptivePrecision = 1;
         }
 
         BigDecimal last;
 
         if (adaptivePrecision < maxPrecision) {
-            if (multiply(result, result, mathContext).compareTo(x) == 0) {
+            if (result.multiply(result).compareTo(x) == 0) {
                 return round(result, mathContext); // early exit if x is a square number
             }
 
-            MathContext adaptiveMC;
             do {
                 last = result;
                 adaptivePrecision <<= 1;
                 if (adaptivePrecision > maxPrecision) {
                     adaptivePrecision = maxPrecision;
                 }
-                adaptiveMC = new MathContext(adaptivePrecision, mathContext.getRoundingMode());
-                result = multiply(add(divide(x, result, adaptiveMC), last, adaptiveMC), ONE_HALF, adaptiveMC);
+                MathContext mc = new MathContext(adaptivePrecision, mathContext.getRoundingMode());
+                result = x.divide(result, mc).add(last).multiply(ONE_HALF, mc);
             }
-            while (adaptivePrecision < maxPrecision || subtract(result, last, adaptiveMC).abs().compareTo(acceptableError) > 0);
+            while (adaptivePrecision < maxPrecision || result.subtract(last).abs().compareTo(acceptableError) > 0);
         }
 
         return round(result, mathContext);
@@ -624,7 +623,7 @@ public class BigDecimalMath {
 
         MathContext mc = new MathContext(mathContext.getPrecision() + 6, mathContext.getRoundingMode());
 
-        return pow(x, divide(BigDecimal.ONE, n, mc), mathContext);
+        return pow(x, BigDecimal.ONE.divide(n, mc), mathContext);
     }
 
     /**
@@ -675,7 +674,7 @@ public class BigDecimalMath {
         BigBasic.checkMathContext(mathContext);
         MathContext mc = new MathContext(mathContext.getPrecision() + 4, mathContext.getRoundingMode());
 
-        BigDecimal result = divide(log(x, mc), BigBasic.logTwo(mc), mc);
+        BigDecimal result = log(x, mc).divide(BigBasic.logTwo(mc), mc);
         return round(result, mathContext);
     }
 
@@ -692,7 +691,7 @@ public class BigDecimalMath {
         BigBasic.checkMathContext(mathContext);
         MathContext mc = new MathContext(mathContext.getPrecision() + 2, mathContext.getRoundingMode());
 
-        BigDecimal result = divide(log(x, mc), BigBasic.logTen(mc), mc);
+        BigDecimal result = log(x, mc).divide(BigBasic.logTen(mc), mc);
         BigDecimal rounded = round(result, mathContext);
         return rounded.stripTrailingZeros();
     }
@@ -788,7 +787,7 @@ public class BigDecimalMath {
 
         if (x.abs().compareTo(ROUGHLY_TWO_PI) > 0) {
             MathContext mc2 = new MathContext(mc.getPrecision() + 4, mathContext.getRoundingMode());
-            BigDecimal twoPi = multiply(TWO, pi(mc2), mc2);
+            BigDecimal twoPi = TWO.multiply(pi(mc2));
             x = x.remainder(twoPi, mc2);
         }
 
@@ -823,7 +822,7 @@ public class BigDecimalMath {
         MathContext mc = new MathContext(mathContext.getPrecision() + 6, mathContext.getRoundingMode());
 
         if (x.compareTo(BigDecimal.valueOf(0.707107)) >= 0) {
-            BigDecimal xTransformed = sqrt(subtract(ONE, multiply(x, x, mc), mc), mc);
+            BigDecimal xTransformed = sqrt(ONE.subtract(x.multiply(x)), mc);
             return acos(xTransformed, mathContext);
         }
 
@@ -847,7 +846,7 @@ public class BigDecimalMath {
 
         if (x.abs().compareTo(ROUGHLY_TWO_PI) > 0) {
             MathContext mc2 = new MathContext(mc.getPrecision() + 4, mathContext.getRoundingMode());
-            BigDecimal twoPi = multiply(TWO, pi(mc2), mc2);
+            BigDecimal twoPi = TWO.multiply(pi(mc2), mc2);
             x = x.remainder(twoPi, mc2);
         }
 
@@ -877,7 +876,7 @@ public class BigDecimalMath {
 
         MathContext mc = new MathContext(mathContext.getPrecision() + 6, mathContext.getRoundingMode());
 
-        BigDecimal result = subtract(divide(pi(mc), TWO, mc), asin(x, mc), mc);
+        BigDecimal result = pi(mc).divide(TWO, mc).subtract(asin(x, mc));
         return round(result, mathContext);
     }
 
@@ -898,7 +897,7 @@ public class BigDecimalMath {
         }
 
         MathContext mc = new MathContext(mathContext.getPrecision() + 4, mathContext.getRoundingMode());
-        BigDecimal result = divide(sin(x, mc), cos(x, mc), mc);
+        BigDecimal result = sin(x, mc).divide(cos(x, mc), mc);
         return round(result, mathContext);
     }
 
@@ -916,7 +915,7 @@ public class BigDecimalMath {
         BigBasic.checkMathContext(mathContext);
         MathContext mc = new MathContext(mathContext.getPrecision() + 6, mathContext.getRoundingMode());
 
-        x = divide(x, sqrt(add(ONE, multiply(x, x, mc), mc), mc), mc);
+        x = x.divide(sqrt(ONE.add(x.multiply(x, mc)), mc), mc);
 
         BigDecimal result = asin(x, mc);
         return round(result, mathContext);
@@ -942,20 +941,20 @@ public class BigDecimalMath {
         MathContext mc = new MathContext(mathContext.getPrecision() + 3, mathContext.getRoundingMode());
 
         if (x.signum() > 0) { // x > 0
-            return atan(divide(y, x, mc), mathContext);
+            return atan(y.divide(x, mc), mathContext);
         } else if (x.signum() < 0) {
             if (y.signum() > 0) {  // x < 0 && y > 0
-                return add(atan(divide(y, x, mc), mc), pi(mc), mathContext);
+                return atan(y.divide(x, mc), mc).add(pi(mc), mathContext);
             } else if (y.signum() < 0) { // x < 0 && y < 0
-                return subtract(atan(divide(y, x, mc), mc), pi(mc), mathContext);
+                return atan(y.divide(x, mc), mc).subtract(pi(mc), mathContext);
             } else { // x < 0 && y = 0
                 return pi(mathContext);
             }
         } else {
             if (y.signum() > 0) { // x == 0 && y > 0
-                return divide(pi(mc), TWO, mathContext);
+                return pi(mc).divide(TWO, mathContext);
             } else if (y.signum() < 0) {  // x == 0 && y < 0
-                return divide(pi(mc), TWO, mathContext).negate();
+                return pi(mc).divide(TWO, mathContext).negate();
             } else {
                 throw new ArithmeticException("Illegal atan2(y, x) for x = 0; y = 0");
             }
@@ -980,7 +979,7 @@ public class BigDecimalMath {
         }
 
         MathContext mc = new MathContext(mathContext.getPrecision() + 4, mathContext.getRoundingMode());
-        BigDecimal result = divide(cos(x, mc), sin(x, mc), mc);
+        BigDecimal result = cos(x, mc).divide(sin(x, mc), mc);
         return round(result, mathContext);
     }
 
@@ -997,7 +996,7 @@ public class BigDecimalMath {
     public static BigDecimal acot(BigDecimal x, MathContext mathContext) {
         BigBasic.checkMathContext(mathContext);
         MathContext mc = new MathContext(mathContext.getPrecision() + 4, mathContext.getRoundingMode());
-        BigDecimal result = subtract(divide(pi(mc), TWO, mc), atan(x, mc), mc);
+        BigDecimal result = pi(mc).divide(TWO, mc).subtract(atan(x, mc));
         return round(result, mathContext);
     }
 
@@ -1048,7 +1047,7 @@ public class BigDecimalMath {
     public static BigDecimal tanh(BigDecimal x, MathContext mathContext) {
         BigBasic.checkMathContext(mathContext);
         MathContext mc = new MathContext(mathContext.getPrecision() + 6, mathContext.getRoundingMode());
-        BigDecimal result = divide(sinh(x, mc), cosh(x, mc), mc);
+        BigDecimal result = sinh(x, mc).divide(cosh(x, mc), mc);
         return round(result, mathContext);
     }
 
@@ -1065,7 +1064,7 @@ public class BigDecimalMath {
     public static BigDecimal coth(BigDecimal x, MathContext mathContext) {
         BigBasic.checkMathContext(mathContext);
         MathContext mc = new MathContext(mathContext.getPrecision() + 6, mathContext.getRoundingMode());
-        BigDecimal result = divide(cosh(x, mc), sinh(x, mc), mc);
+        BigDecimal result = cosh(x, mc).divide(sinh(x, mc), mc);
         return round(result, mathContext);
     }
 
@@ -1082,7 +1081,7 @@ public class BigDecimalMath {
     public static BigDecimal asinh(BigDecimal x, MathContext mathContext) {
         BigBasic.checkMathContext(mathContext);
         MathContext mc = new MathContext(mathContext.getPrecision() + 10, mathContext.getRoundingMode());
-        BigDecimal result = log(add(x, sqrt(add(multiply(x, x, mc), ONE, mc), mc), mc), mc);
+        BigDecimal result = log(x.add(sqrt(x.multiply(x, mc).add(ONE, mc), mc)), mc);
         return round(result, mathContext);
     }
 
@@ -1102,7 +1101,7 @@ public class BigDecimalMath {
         }
         BigBasic.checkMathContext(mathContext);
         MathContext mc = new MathContext(mathContext.getPrecision() + 6, mathContext.getRoundingMode());
-        BigDecimal result = log(add(x, sqrt(subtract(multiply(x, x, mc), ONE, mc), mc), mc), mc);
+        BigDecimal result = log(x.add(sqrt(x.multiply(x).subtract(ONE), mc)), mc);
         return round(result, mathContext);
     }
 
@@ -1126,7 +1125,7 @@ public class BigDecimalMath {
 
         BigBasic.checkMathContext(mathContext);
         MathContext mc = new MathContext(mathContext.getPrecision() + 6, mathContext.getRoundingMode());
-        BigDecimal result = multiply(log(divide(add(ONE, x, mc), subtract(ONE, x, mc), mc), mc), ONE_HALF, mc);
+        BigDecimal result = log(ONE.add(x).divide(ONE.subtract(x), mc), mc).multiply(ONE_HALF);
         return round(result, mathContext);
     }
 
@@ -1143,7 +1142,7 @@ public class BigDecimalMath {
     public static BigDecimal acoth(BigDecimal x, MathContext mathContext) {
         BigBasic.checkMathContext(mathContext);
         MathContext mc = new MathContext(mathContext.getPrecision() + 6, mathContext.getRoundingMode());
-        BigDecimal result = multiply(log(divide(add(x, ONE, mc), subtract(x, ONE, mc), mc), mc), ONE_HALF, mc);
+        BigDecimal result = log(x.add(ONE).divide(x.subtract(ONE), mc), mc).multiply(ONE_HALF);
         return round(result, mathContext);
     }
 
@@ -1159,7 +1158,7 @@ public class BigDecimalMath {
     public static BigDecimal toDegrees(BigDecimal x, MathContext mathContext) {
         BigBasic.checkMathContext(mathContext);
         MathContext mc = new MathContext(mathContext.getPrecision() + 6, mathContext.getRoundingMode());
-        BigDecimal result = multiply(x, divide(ONE_HUNDRED_EIGHTY, pi(mc), mc), mc);
+        BigDecimal result = x.multiply(ONE_HUNDRED_EIGHTY.divide(pi(mc), mc),  mc);
         return round(result, mathContext);
     }
 
@@ -1175,76 +1174,8 @@ public class BigDecimalMath {
     public static BigDecimal toRadians(BigDecimal x, MathContext mathContext) {
         BigBasic.checkMathContext(mathContext);
         MathContext mc = new MathContext(mathContext.getPrecision() + 6, mathContext.getRoundingMode());
-        BigDecimal result = multiply(x, divide(pi(mc), ONE_HUNDRED_EIGHTY, mc), mc);
+        BigDecimal result = x.multiply(pi(mc).divide(ONE_HUNDRED_EIGHTY, mc), mc);
         return round(result, mathContext);
-    }
-
-    /**
-     * Fast add that uses rounding not only for the result, but for the calculation also.
-     *
-     * @param augend      is a number to which another number is added.
-     * @param addend      is a number which is added to an augend.
-     * @param mathContext the {@link MathContext} used for the calculation and result.
-     * @return augend + addend, rounded as necessary.
-     */
-    public static BigDecimal add(BigDecimal augend, BigDecimal addend, MathContext mathContext) {
-        MathContext mc = BigBasic.buildArithmeticMathContextOrGetFromCache(mathContext.getPrecision());
-
-        BigDecimal augendRounded = round(augend, mc);
-        BigDecimal addendRounded = round(addend, mc);
-
-        return augendRounded.add(addendRounded, mathContext);
-    }
-
-    /**
-     * Fast subtract that uses rounding not only for the result, but for the calculation also.
-     *
-     * @param minuend     is a number from which the subtrahend is to be subtracted.
-     * @param subtrahend  is a number that is to be subtracted from a minuend.
-     * @param mathContext the {@link MathContext} used for the calculation and result.
-     * @return minuend - subtrahend, rounded as necessary.
-     */
-    public static BigDecimal subtract(BigDecimal minuend, BigDecimal subtrahend, MathContext mathContext) {
-        MathContext mc = BigBasic.buildArithmeticMathContextOrGetFromCache(mathContext.getPrecision());
-
-        BigDecimal minuendRounded = round(minuend, mc);
-        BigDecimal subtrahendRounded = round(subtrahend, mc);
-
-        return minuendRounded.subtract(subtrahendRounded, mathContext);
-    }
-
-    /**
-     * Fast multiply that uses rounding not only for the result, but for the calculation also.
-     *
-     * @param multiplicand is the number to which another number is multiplied.
-     * @param multiplier   is a number which is multiplied by the multiplicand.
-     * @param mathContext  the {@link MathContext} used for the calculation and result.
-     * @return multiplicand * multiplier, rounded as necessary.
-     */
-    public static BigDecimal multiply(BigDecimal multiplicand, BigDecimal multiplier, MathContext mathContext) {
-        MathContext mc = BigBasic.buildArithmeticMathContextOrGetFromCache(mathContext.getPrecision());
-
-        BigDecimal multiplicandRounded = round(multiplicand, mc);
-        BigDecimal multiplierRounded = round(multiplier, mc);
-
-        return multiplicandRounded.multiply(multiplierRounded, mathContext);
-    }
-
-    /**
-     * Fast divide that uses rounding not only for the result, but for the calculation also.
-     *
-     * @param dividend    is the number that is being divided.
-     * @param divisor     is a number by which another number is to be divided.
-     * @param mathContext the {@link MathContext} used for the calculation and result.
-     * @return dividend / divisor, rounded as necessary.
-     */
-    public static BigDecimal divide(BigDecimal dividend, BigDecimal divisor, MathContext mathContext) {
-        MathContext mc = BigBasic.buildArithmeticMathContextOrGetFromCache(mathContext.getPrecision());
-
-        BigDecimal dividendRounded = round(dividend, mc);
-        BigDecimal divisorRounded = round(divisor, mc);
-
-        return dividendRounded.divide(divisorRounded, mathContext);
     }
 
     /**
@@ -1301,28 +1232,28 @@ public class BigDecimalMath {
             BigDecimal a = x.setScale(0, RoundingMode.FLOOR);
 
             BigDecimal aux = pn1;
-            pn1 = add((multiply(a, pn1, mathContext)), pn2, mathContext);
+            pn1 = a.multiply(pn1, mathContext).add(pn2, mathContext);
             if (pn1.compareTo(maxNumeratorValue) > 0) {
                 throw new ArithmeticException("Unable to find numerator for " + value + " value because it reached the max numerator limit " + maxNumeratorValue);
             }
 
             pn2 = aux;
             aux = qn1;
-            qn1 = add(multiply(a, qn1, mathContext), qn2, mathContext);
+            qn1 = a.multiply(qn1, mathContext).add(qn2, mathContext);
             if (qn1.compareTo(maxDenominatorValue) > 0) {
                 throw new ArithmeticException("Unable to find denominator for " + value + " value because it reached the max denominator limit " + maxDenominatorValue);
             }
 
-            BigDecimal numeratorDivideDenominator = divide(pn1, qn1, mathContext);
-            left = subtract(value, numeratorDivideDenominator, mathContext).abs(mathContext);
-            right = multiply(value, toleranceBigDecimal, mathContext);
+            BigDecimal numeratorDivideDenominator = pn1.divide(qn1, mathContext);
+            left = value.subtract(numeratorDivideDenominator, mathContext).abs(mathContext);
+            right = value.multiply(toleranceBigDecimal, mathContext);
 
             qn2 = aux;
-            BigDecimal xSubtractA = subtract(x, a, mathContext);
+            BigDecimal xSubtractA = x.subtract(a, mathContext);
             if (xSubtractA.compareTo(BigDecimal.ZERO) == 0) {
                 break;
             }
-            x = divide(BigDecimal.ONE, xSubtractA, mathContext);
+            x = BigDecimal.ONE.divide(xSubtractA, mathContext);
         } while (left.compareTo(right) > 0);
 
         BigInteger numerator = pn1.toBigInteger();
@@ -1355,7 +1286,7 @@ public class BigDecimalMath {
                 value.remainder(BigDecimal.valueOf(3), mathContext).compareTo(BigDecimal.ZERO) == 0)
             return false;
         BigDecimal n = BigDecimal.valueOf(5);
-        while (multiply(n, n, mathContext).compareTo(value) <= 0) {
+        while (n.multiply(n, mathContext).compareTo(value) <= 0) {
             if (value.remainder(n).compareTo(BigDecimal.ZERO) == 0 || value.remainder(n.add(BigDecimal.valueOf(2), mathContext)).compareTo(BigDecimal.ZERO) == 0)
                 return false;
             n = n.add(BigDecimal.valueOf(6), mathContext);
