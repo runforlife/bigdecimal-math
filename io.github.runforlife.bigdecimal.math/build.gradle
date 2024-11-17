@@ -7,12 +7,12 @@ plugins {
     id 'jacoco'
 }
 
-group = 'org.oyushko'
+group = 'io.github.runforlife'
 version = '0.1.0'
 archivesBaseName = 'bigdecimal-math'
 
 ext {
-    moduleName = "org.oyushko.bigdecimal.math"
+    moduleName = "io.github.runforlife.bigdecimal.math"
     if (!project.hasProperty("ossrhUsername")) {
         ossrhUsername = "undefined"
     }
@@ -65,7 +65,7 @@ jar {
                 "Bundle-Name": archivesBaseName,
                 "Bundle-SymbolicName": moduleName,
                 "Bundle-Version": version,
-                "Export-Package": "org.oyushko.bigdecimal.math, org.oyushko.bigdecimal.math.stream")
+                "Export-Package": "io.github.runforlife.bigdecimal.math, io.github.runforlife.bigdecimal.math.stream")
     }
 }
 

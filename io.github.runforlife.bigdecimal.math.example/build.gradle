@@ -1,0 +1,19 @@
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'eclipse'
+
+mainClassName = 'io.github.runforlife.bigdecimal.math.example.BigDecimalMathExample'
+
+repositories {
+	mavenCentral()
+}
+
+compileJava   {
+	sourceCompatibility = '1.8'
+	targetCompatibility = '1.8'
+}
+
+dependencies {
+	//compile group: 'io.github.runforlife', name: 'bigdecimal-math', version: '2.3.3'
+	compile project(':io.github.runforlife.bigdecimal.math')
+}

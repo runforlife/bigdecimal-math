@@ -2,13 +2,13 @@ apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'eclipse'
 
-mainClassName = 'org.oyushko.bigdecimal.math.example.internal.PerformanceRegressionBigDecimalMath'
+mainClassName = 'io.github.runforlife.bigdecimal.math.example.internal.PerformanceRegressionBigDecimalMath'
 
 repositories {
 	mavenCentral()
 }
 
 dependencies {
-	compile project(':org.oyushko.bigdecimal.math')
-	compile project(':org.oyushko.bigdecimal.math.example')
+	compile project(':io.github.runforlife.bigdecimal.math')
+	compile project(':io.github.runforlife.bigdecimal.math.example')
 }
