@@ -13,6 +13,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import static io.github.runforlife.bigdecimal.math.BigDecimalMath.exp;
+import static io.github.runforlife.bigdecimal.math.BigDecimalMath.factorial;
+import static io.github.runforlife.bigdecimal.math.BigDecimalMath.integralPart;
+import static io.github.runforlife.bigdecimal.math.BigDecimalMath.log10;
+import static io.github.runforlife.bigdecimal.math.BigDecimalMath.pi;
+import static io.github.runforlife.bigdecimal.math.BigDecimalMath.pow;
+import static io.github.runforlife.bigdecimal.math.BigDecimalMath.sqrt;
+
 public class GammaExperiments {
 
 	private static final java.math.BigDecimal TWO = BigDecimal.valueOf(2);

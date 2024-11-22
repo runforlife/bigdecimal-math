@@ -1,9 +1,10 @@
 package ch.obermuhlner.math.big.example;
 
-import org.oyushko.bigdecimal.math.BigBasic;
-import org.oyushko.bigdecimal.math.BigDecimalMath;
-import org.oyushko.bigdecimal.math.BigFloat;
-import org.oyushko.bigdecimal.math.BigFloat.Context;
+import io.github.runforlife.bigdecimal.math.BigFloat;
+import io.github.runforlife.bigdecimal.math.BigFloat.Context;
+
+import static io.github.runforlife.bigdecimal.math.BigFloat.context;
+import static io.github.runforlife.bigdecimal.math.BigFloat.sqrt;
 
 public class BigFloatExample {
 
@@ -16,7 +17,7 @@ public class BigFloatExample {
 	}
 
 	private static BigFloat piChudnovski(int precision) {
-		Context context = BigFloat.context(precision + 10);
+		Context context = context(precision + 10);
 
 		final BigFloat valueDivisor = context.valueOf(640320).pow(3).divide(24);
 
@@ -45,9 +46,9 @@ public class BigFloatExample {
 			sumB = sumB.add(b);
 		}
 		
-		final BigFloat factor = BigDecimalMath.sqrt(context.valueOf(10005)).multiply(426880);
+		final BigFloat factor = sqrt(context.valueOf(10005)).multiply(426880);
 		BigFloat pi = factor.divide(sumA.multiply(13591409).add(sumB.multiply(545140134)));
 		
-		return BigBasic.context(precision).valueOf(pi);
+		return context(precision).valueOf(pi);
 	}
 }

@@ -1,6 +1,6 @@
 package ch.obermuhlner.math.big.example;
 
-import org.oyushko.bigdecimal.math.BigDecimalMath;
+import io.github.runforlife.bigdecimal.math.BigDecimalMath;
 
 import java.math.BigDecimal;
 import java.math.MathContext;

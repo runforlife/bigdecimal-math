@@ -3,7 +3,7 @@ package ch.obermuhlner.math.big.example;
 import java.math.BigDecimal;
 import java.math.MathContext;
 
-import org.oyushko.bigdecimal.math.BigDecimalMath;
+import io.github.runforlife.bigdecimal.math.BigDecimalMath;
 
 /**
  * This example shows how to calculate pi with different precisions.

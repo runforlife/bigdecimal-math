@@ -10,9 +10,9 @@ import java.math.MathContext;
 import java.util.Arrays;
 import java.util.function.BiFunction;
 
-import org.oyushko.bigdecimal.math.BigDecimalMath;
-import org.oyushko.bigdecimal.math.internal.AsinCalculator;
-import org.oyushko.bigdecimal.math.internal.ExpCalculator;
+import io.github.runforlife.bigdecimal.math.BigDecimalMath;
+import io.github.runforlife.bigdecimal.math.internal.AsinCalculator;
+import io.github.runforlife.bigdecimal.math.internal.ExpCalculator;
 
 /**
  * Experimental implementations to find the most efficient algorithms. 

@@ -3,7 +3,7 @@ package ch.obermuhlner.math.big.example.stream;
 import java.math.BigDecimal;
 import java.math.MathContext;
 
-import org.oyushko.bigdecimal.math.stream.BigDecimalStream;
+import io.github.runforlife.bigdecimal.math.stream.BigDecimalStream;
 
 public class BigDecimalStreamExample {
 

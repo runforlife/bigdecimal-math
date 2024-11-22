@@ -11,7 +11,7 @@ import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import org.oyushko.bigdecimal.math.BigDecimalMath;
+import io.github.runforlife.bigdecimal.math.BigDecimalMath;
 import ch.obermuhlner.math.big.example.StopWatch;
 
 /**

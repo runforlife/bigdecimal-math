@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.oyushko.bigdecimal.math.BigDecimalMath;
-import org.oyushko.bigdecimal.math.BigFloat;
+import io.github.runforlife.bigdecimal.math.BigDecimalMath;
+import io.github.runforlife.bigdecimal.math.BigFloat;
 import ch.obermuhlner.math.big.example.StopWatch;
 
 public class PerformanceRegressionBigDecimalMath {

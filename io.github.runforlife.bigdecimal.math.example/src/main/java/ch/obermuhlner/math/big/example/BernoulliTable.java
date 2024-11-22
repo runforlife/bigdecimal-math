@@ -1,6 +1,6 @@
 package ch.obermuhlner.math.big.example;
 
-import org.oyushko.bigdecimal.math.BigRational;
+import io.github.runforlife.bigdecimal.math.BigRational;
 
 public class BernoulliTable {
 

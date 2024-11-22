@@ -1,11 +1,21 @@
 package ch.obermuhlner.math.big.example;
 
-import org.oyushko.bigdecimal.math.DefaultBigDecimalMath;
-import org.oyushko.bigdecimal.math.stream.BigDecimalStream;
+import io.github.runforlife.bigdecimal.math.DefaultBigDecimalMath;
+import io.github.runforlife.bigdecimal.math.stream.BigDecimalStream;
 
 import java.math.BigDecimal;
 
-import static java.math.BigDecimal.*;
+import static io.github.runforlife.bigdecimal.math.DefaultBigDecimalMath.add;
+import static io.github.runforlife.bigdecimal.math.DefaultBigDecimalMath.currentMathContext;
+import static io.github.runforlife.bigdecimal.math.DefaultBigDecimalMath.divide;
+import static io.github.runforlife.bigdecimal.math.DefaultBigDecimalMath.multiply;
+import static io.github.runforlife.bigdecimal.math.DefaultBigDecimalMath.pi;
+import static io.github.runforlife.bigdecimal.math.DefaultBigDecimalMath.pow;
+import static io.github.runforlife.bigdecimal.math.DefaultBigDecimalMath.sqrt;
+import static io.github.runforlife.bigdecimal.math.DefaultBigDecimalMath.withLocalMathContext;
+import static java.math.BigDecimal.ONE;
+import static java.math.BigDecimal.ZERO;
+import static java.math.BigDecimal.valueOf;
 
 public class DefaultBigDecimalMathExample {
     public static void main(String[] args) {
@@ -125,9 +135,9 @@ public class DefaultBigDecimalMathExample {
 
     private static void runWithLocalMathContextExample() {
         System.out.println("Pi[default]: " + DefaultBigDecimalMath.pi());
-        DefaultBigDecimalMath.withLocalMathContext(5, () -> {
+        withLocalMathContext(5, () -> {
             System.out.println("Pi[5]: " + DefaultBigDecimalMath.pi());
-            DefaultBigDecimalMath.withLocalMathContext(10, () -> {
+            withLocalMathContext(10, () -> {
                 System.out.println("Pi[10]: " + DefaultBigDecimalMath.pi());
             });
             System.out.println("Pi[5]: " + DefaultBigDecimalMath.pi());
@@ -148,7 +158,7 @@ public class DefaultBigDecimalMathExample {
     }
 
     private static void runWithLocalMathContextParallelBadExample() {
-        DefaultBigDecimalMath.withLocalMathContext(5, () -> {
+        withLocalMathContext(5, () -> {
             BigDecimalStream.range(0.0, 1.0, 0.01, DefaultBigDecimalMath.currentMathContext())
                     .map(b -> DefaultBigDecimalMath.cos(b))
                     .map(b -> "sequential " + Thread.currentThread().getName() + " [5]: " + b)

@@ -1,8 +1,8 @@
 package ch.obermuhlner.math.big.example.stream;
 
-import org.oyushko.bigdecimal.math.BigFloat;
-import org.oyushko.bigdecimal.math.BigFloat.Context;
-import org.oyushko.bigdecimal.math.stream.BigFloatStream;
+import io.github.runforlife.bigdecimal.math.BigFloat;
+import io.github.runforlife.bigdecimal.math.BigFloat.Context;
+import io.github.runforlife.bigdecimal.math.stream.BigFloatStream;
 
 public class BigFloatStreamExample {
 

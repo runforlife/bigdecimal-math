@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
-import org.oyushko.bigdecimal.math.BigDecimalMath;
+import io.github.runforlife.bigdecimal.math.BigDecimalMath;
 
 /**
  * Prints function tables to compare {@link Math} and {@link BigDecimalMath} functions.
