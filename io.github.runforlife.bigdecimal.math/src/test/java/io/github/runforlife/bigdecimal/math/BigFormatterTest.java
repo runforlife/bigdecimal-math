@@ -10,34 +10,85 @@ public class BigFormatterTest {
     @Test
     public void format_zero() {
         assertEquals("0", BigFormatter.format(new BigDecimal("0"), 7));
+        assertEquals("0", BigFormatter.format(new BigDecimal("0E+0"), 7));
+
+        assertEquals("0", BigFormatter.format(new BigDecimal("0E+1"), 7));
+        assertEquals("0", BigFormatter.format(new BigDecimal("0E+2"), 7));
+
+        assertEquals("0", BigFormatter.format(new BigDecimal("0E-1"), 7));
+        assertEquals("0", BigFormatter.format(new BigDecimal("0E-2"), 7));
     }
 
     @Test
     public void format_positive_0d1_0d01() {
-        assertEquals("0.1", BigFormatter.format(new BigDecimal("0.10"), 7));
-        assertEquals("0.01", BigFormatter.format(new BigDecimal("0.010"), 7));
-        assertEquals("0.001", BigFormatter.format(new BigDecimal("0.0010"), 7));
-        assertEquals("0.0001", BigFormatter.format(new BigDecimal("0.00010"), 7));
-        assertEquals("0.00001", BigFormatter.format(new BigDecimal("0.000010"), 7));
-        assertEquals("1E-6", BigFormatter.format(new BigDecimal("0.0000010"), 7));
-        assertEquals("1E-7", BigFormatter.format(new BigDecimal("0.00000010"), 7));
-        assertEquals("1E-8", BigFormatter.format(new BigDecimal("0.000000010"), 7));
-        assertEquals("1E-9", BigFormatter.format(new BigDecimal("0.0000000010"), 7));
-        assertEquals("1E-10", BigFormatter.format(new BigDecimal("0.00000000010"), 7));
+        assertEquals("1", BigFormatter.format(new BigDecimal("1"), 7));
+        assertEquals("1", BigFormatter.format(new BigDecimal("1E-0"), 7));
+
+        assertEquals("0.1", BigFormatter.format(new BigDecimal("0.1"), 7));
+        assertEquals("0.1", BigFormatter.format(new BigDecimal("1E-1"), 7));
+
+        assertEquals("0.01", BigFormatter.format(new BigDecimal("0.01"), 7));
+        assertEquals("0.01", BigFormatter.format(new BigDecimal("1E-2"), 7));
+
+        assertEquals("0.001", BigFormatter.format(new BigDecimal("0.001"), 7));
+        assertEquals("0.001", BigFormatter.format(new BigDecimal("1E-3"), 7));
+
+        assertEquals("0.0001", BigFormatter.format(new BigDecimal("0.0001"), 7));
+        assertEquals("0.0001", BigFormatter.format(new BigDecimal("1E-4"), 7));
+
+        assertEquals("0.00001", BigFormatter.format(new BigDecimal("0.00001"), 7));
+        assertEquals("0.00001", BigFormatter.format(new BigDecimal("1E-5"), 7));
+
+        assertEquals("1E-6", BigFormatter.format(new BigDecimal("0.000001"), 7));
+        assertEquals("1E-6", BigFormatter.format(new BigDecimal("1E-6"), 7));
+
+        assertEquals("1E-7", BigFormatter.format(new BigDecimal("0.0000001"), 7));
+        assertEquals("1E-7", BigFormatter.format(new BigDecimal("1E-7"), 7));
+
+        assertEquals("1E-8", BigFormatter.format(new BigDecimal("0.00000001"), 7));
+        assertEquals("1E-8", BigFormatter.format(new BigDecimal("1E-8"), 7));
+
+        assertEquals("1E-9", BigFormatter.format(new BigDecimal("0.000000001"), 7));
+        assertEquals("1E-9", BigFormatter.format(new BigDecimal("1E-9"), 7));
+
+        assertEquals("1E-10", BigFormatter.format(new BigDecimal("0.0000000001"), 7));
+        assertEquals("1E-10", BigFormatter.format(new BigDecimal("1E-10"), 7));
     }
 
     @Test
     public void format_negative_0d1_0d01() {
-        assertEquals("-0.1", BigFormatter.format(new BigDecimal("-0.10"), 7));
-        assertEquals("-0.01", BigFormatter.format(new BigDecimal("-0.010"), 7));
-        assertEquals("-0.001", BigFormatter.format(new BigDecimal("-0.0010"), 7));
-        assertEquals("-0.0001", BigFormatter.format(new BigDecimal("-0.00010"), 7));
-        assertEquals("-1E-5", BigFormatter.format(new BigDecimal("-0.000010"), 7));
-        assertEquals("-1E-6", BigFormatter.format(new BigDecimal("-0.0000010"), 7));
-        assertEquals("-1E-7", BigFormatter.format(new BigDecimal("-0.00000010"), 7));
-        assertEquals("-1E-8", BigFormatter.format(new BigDecimal("-0.000000010"), 7));
-        assertEquals("-1E-9", BigFormatter.format(new BigDecimal("-0.0000000010"), 7));
-        assertEquals("-1E-10", BigFormatter.format(new BigDecimal("-0.00000000010"), 7));
+        assertEquals("-1", BigFormatter.format(new BigDecimal("-1"), 7));
+        assertEquals("-1", BigFormatter.format(new BigDecimal("-1E-0"), 7));
+
+        assertEquals("-0.1", BigFormatter.format(new BigDecimal("-0.1"), 7));
+        assertEquals("-0.1", BigFormatter.format(new BigDecimal("-1E-1"), 7));
+
+        assertEquals("-0.01", BigFormatter.format(new BigDecimal("-0.01"), 7));
+        assertEquals("-0.01", BigFormatter.format(new BigDecimal("-1E-2"), 7));
+
+        assertEquals("-0.001", BigFormatter.format(new BigDecimal("-0.001"), 7));
+        assertEquals("-0.001", BigFormatter.format(new BigDecimal("-1E-3"), 7));
+
+        assertEquals("-0.0001", BigFormatter.format(new BigDecimal("-0.0001"), 7));
+        assertEquals("-0.0001", BigFormatter.format(new BigDecimal("-1E-4"), 7));
+
+        assertEquals("-1E-5", BigFormatter.format(new BigDecimal("-0.00001"), 7));
+        assertEquals("-1E-5", BigFormatter.format(new BigDecimal("-1E-5"), 7));
+
+        assertEquals("-1E-6", BigFormatter.format(new BigDecimal("-0.000001"), 7));
+        assertEquals("-1E-6", BigFormatter.format(new BigDecimal("-1E-6"), 7));
+
+        assertEquals("-1E-7", BigFormatter.format(new BigDecimal("-0.0000001"), 7));
+        assertEquals("-1E-7", BigFormatter.format(new BigDecimal("-1E-7"), 7));
+
+        assertEquals("-1E-8", BigFormatter.format(new BigDecimal("-0.00000001"), 7));
+        assertEquals("-1E-8", BigFormatter.format(new BigDecimal("-1E-8"), 7));
+
+        assertEquals("-1E-9", BigFormatter.format(new BigDecimal("-0.000000001"), 7));
+        assertEquals("-1E-9", BigFormatter.format(new BigDecimal("-1E-9"), 7));
+
+        assertEquals("-1E-10", BigFormatter.format(new BigDecimal("-0.0000000001"), 7));
+        assertEquals("-1E-10", BigFormatter.format(new BigDecimal("-1E-10"), 7));
     }
 
     @Test
@@ -71,31 +122,73 @@ public class BigFormatterTest {
     @Test
     public void format_positive_1_10() {
         assertEquals("1", BigFormatter.format(new BigDecimal("1"), 7));
+        assertEquals("1", BigFormatter.format(new BigDecimal("1E+0"), 7));
+
         assertEquals("10", BigFormatter.format(new BigDecimal("10"), 7));
+        assertEquals("10", BigFormatter.format(new BigDecimal("1E+1"), 7));
+
         assertEquals("100", BigFormatter.format(new BigDecimal("100"), 7));
+        assertEquals("100", BigFormatter.format(new BigDecimal("1E+2"), 7));
+
         assertEquals("1000", BigFormatter.format(new BigDecimal("1000"), 7));
+        assertEquals("1000", BigFormatter.format(new BigDecimal("1E+3"), 7));
+
         assertEquals("10000", BigFormatter.format(new BigDecimal("10000"), 7));
+        assertEquals("10000", BigFormatter.format(new BigDecimal("1E+4"), 7));
+
         assertEquals("100000", BigFormatter.format(new BigDecimal("100000"), 7));
+        assertEquals("100000", BigFormatter.format(new BigDecimal("1E+5"), 7));
+
         assertEquals("1000000", BigFormatter.format(new BigDecimal("1000000"), 7));
+        assertEquals("1000000", BigFormatter.format(new BigDecimal("1E+6"), 7));
+
         assertEquals("1E+7", BigFormatter.format(new BigDecimal("10000000"), 7));
+        assertEquals("1E+7", BigFormatter.format(new BigDecimal("1+7"), 7));
+
         assertEquals("1E+8", BigFormatter.format(new BigDecimal("100000000"), 7));
+        assertEquals("1E+8", BigFormatter.format(new BigDecimal("1E+8"), 7));
+
         assertEquals("1E+9", BigFormatter.format(new BigDecimal("1000000000"), 7));
+        assertEquals("1E+9", BigFormatter.format(new BigDecimal("1E+9"), 7));
+
         assertEquals("1E+10", BigFormatter.format(new BigDecimal("10000000000"), 7));
+        assertEquals("1E+10", BigFormatter.format(new BigDecimal("1E+10"), 7));
     }
 
     @Test
     public void format_negative_1_10() {
         assertEquals("-1", BigFormatter.format(new BigDecimal("-1"), 7));
+        assertEquals("-1", BigFormatter.format(new BigDecimal("-1E+0"), 7));
+
         assertEquals("-10", BigFormatter.format(new BigDecimal("-10"), 7));
+        assertEquals("-10", BigFormatter.format(new BigDecimal("-1E+1"), 7));
+
         assertEquals("-100", BigFormatter.format(new BigDecimal("-100"), 7));
+        assertEquals("-100", BigFormatter.format(new BigDecimal("-1E+2"), 7));
+
         assertEquals("-1000", BigFormatter.format(new BigDecimal("-1000"), 7));
+        assertEquals("-1000", BigFormatter.format(new BigDecimal("-1E+3"), 7));
+
         assertEquals("-10000", BigFormatter.format(new BigDecimal("-10000"), 7));
+        assertEquals("-10000", BigFormatter.format(new BigDecimal("-1E+4"), 7));
+
         assertEquals("-100000", BigFormatter.format(new BigDecimal("-100000"), 7));
+        assertEquals("-100000", BigFormatter.format(new BigDecimal("-1E+5"), 7));
+
         assertEquals("-1E+6", BigFormatter.format(new BigDecimal("-1000000"), 7));
+        assertEquals("-1E+6", BigFormatter.format(new BigDecimal("-1E+6"), 7));
+
         assertEquals("-1E+7", BigFormatter.format(new BigDecimal("-10000000"), 7));
+        assertEquals("-1E+7", BigFormatter.format(new BigDecimal("-1E+7"), 7));
+
         assertEquals("-1E+8", BigFormatter.format(new BigDecimal("-100000000"), 7));
+        assertEquals("-1E+8", BigFormatter.format(new BigDecimal("-1E+8"), 7));
+
         assertEquals("-1E+9", BigFormatter.format(new BigDecimal("-1000000000"), 7));
+        assertEquals("-1E+9", BigFormatter.format(new BigDecimal("-1E+9"), 7));
+
         assertEquals("-1E+10", BigFormatter.format(new BigDecimal("-10000000000"), 7));
+        assertEquals("-1E+10", BigFormatter.format(new BigDecimal("-1E+10"), 7));
     }
 
     @Test
