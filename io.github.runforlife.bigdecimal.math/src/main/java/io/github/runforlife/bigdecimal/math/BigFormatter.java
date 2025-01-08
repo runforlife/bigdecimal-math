@@ -8,7 +8,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 public class BigFormatter {
-    public static String format(BigDecimal number, int numberOfCharacters) {
+    public static String format(BigDecimal number, int numberOfCharacters, RoundingMode roundingMode) {
         if (number.compareTo(BigDecimal.ZERO) == 0) {
             return "0";
         }
@@ -16,7 +16,7 @@ public class BigFormatter {
 
         //TODO this does not work because scale is: unscaled * 10 * scale
 //        if (number.scale() >= -33 && number.scale() <= 34) {
-//            number = number.setScale(34, RoundingMode.HALF_EVEN);
+//            number = number.setScale(34, roundingMode);
 //        }
 
 
@@ -49,7 +49,7 @@ public class BigFormatter {
                     int newScale = scale;
                     while (length > numberOfCharacters) {
                         newScale = newScale - 1;
-                        number2 = number2.setScale(newScale, RoundingMode.HALF_EVEN);
+                        number2 = number2.setScale(newScale, roundingMode);
                         number2 = number2.stripTrailingZeros();
                         string1 = number2.toString();
                         length = string1.length();
@@ -69,7 +69,7 @@ public class BigFormatter {
                             pattern = pattern + "E0";
 
                             DecimalFormat formatter = new DecimalFormat(pattern, DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-                            formatter.setRoundingMode(RoundingMode.HALF_EVEN);
+                            formatter.setRoundingMode(roundingMode);
                             formatter.setMinimumFractionDigits(0);
                             String format = formatter.format(number);
 
@@ -77,7 +77,7 @@ public class BigFormatter {
                                 pattern = pattern.replace(".#", ".");
                                 pattern = pattern.replace(".E", "E");
                                 formatter = new DecimalFormat(pattern, DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-                                formatter.setRoundingMode(RoundingMode.HALF_EVEN);
+                                formatter.setRoundingMode(roundingMode);
                                 formatter.setMinimumFractionDigits(0);
                                 format = formatter.format(number);
                             }
@@ -90,7 +90,7 @@ public class BigFormatter {
                             }
 
                             DecimalFormat formatter = new DecimalFormat(pattern, DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-                            formatter.setRoundingMode(RoundingMode.HALF_EVEN);
+                            formatter.setRoundingMode(roundingMode);
                             formatter.setMinimumFractionDigits(0);
                             String format = formatter.format(number);
                             return format;
@@ -107,7 +107,7 @@ public class BigFormatter {
                             pattern = pattern + "E0";
 
                             DecimalFormat formatter = new DecimalFormat(pattern, DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-                            formatter.setRoundingMode(RoundingMode.HALF_EVEN);
+                            formatter.setRoundingMode(roundingMode);
                             formatter.setMinimumFractionDigits(0);
                             String format = formatter.format(number);
 
@@ -115,7 +115,7 @@ public class BigFormatter {
                                 pattern = pattern.replace(".#", ".");
                                 pattern = pattern.replace(".E", "E");
                                 formatter = new DecimalFormat(pattern, DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-                                formatter.setRoundingMode(RoundingMode.HALF_EVEN);
+                                formatter.setRoundingMode(roundingMode);
                                 formatter.setMinimumFractionDigits(0);
                                 format = formatter.format(number);
                             }
@@ -128,7 +128,7 @@ public class BigFormatter {
                             }
 
                             DecimalFormat formatter = new DecimalFormat(pattern, DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-                            formatter.setRoundingMode(RoundingMode.HALF_EVEN);
+                            formatter.setRoundingMode(roundingMode);
                             formatter.setMinimumFractionDigits(0);
                             String format = formatter.format(number);
                             return format;
@@ -138,10 +138,11 @@ public class BigFormatter {
                 return "";
             }
         }
+//        return "";
     }
 
-    public static String format(BigInteger value, int numberOfCharacters) {
-        return BigFormatter.format(new BigDecimal(value), numberOfCharacters);
+    public static String format(BigInteger value, int numberOfCharacters, RoundingMode roundingMode) {
+        return BigFormatter.format(new BigDecimal(value), numberOfCharacters, roundingMode);
     }
 
     private BigFormatter() {
