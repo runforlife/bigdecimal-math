@@ -8,8 +8,9 @@ import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 public class BigFormatter {
-    private static final int DOT_SYMBOL_LENGTH = 1;
     private static final int SIGN_SYMBOL_LENGTH = 1;
+    private static final int ZERO_SYMBOL_LENGTH = 1;
+    private static final int DOT_SYMBOL_LENGTH = 1;
     private static final int EXPONENT_SYMBOL_LENGTH = 1;
 
     public static String format(BigDecimal value, int numberOfCharacters, RoundingMode roundingMode) {
@@ -20,7 +21,8 @@ public class BigFormatter {
         if (valueWithoutTrailingZeros.compareTo(BigDecimal.ZERO) > 0) {
             if (scale > 0) {
                 if (precision > 1) {
-                    if (scale + precision <= numberOfCharacters) {
+                    int numberOfSymbols = scale + precision;
+                    if (numberOfSymbols <= numberOfCharacters) {
                         return String.valueOf(valueWithoutTrailingZeros);
                     } else {
                         int scaleNumberOfDigits = IntLongUtils.numberOfDigits(scale);
@@ -40,7 +42,8 @@ public class BigFormatter {
                         return formattedValue;
                     }
                 } else {
-                    if (DOT_SYMBOL_LENGTH + precision + scale <= numberOfCharacters) {
+                    int numberOfSymbols = DOT_SYMBOL_LENGTH + precision + scale;
+                    if (numberOfSymbols <= numberOfCharacters) {
                         return String.valueOf(valueWithoutTrailingZeros);
                     } else {
                         int scaleNumberOfDigits = IntLongUtils.numberOfDigits(scale);
@@ -73,7 +76,8 @@ public class BigFormatter {
             } else if (scale < 0) {
                 int numberOfScaleDigits = IntLongUtils.numberOfDigits(scale);
 
-                if (precision - scale <= numberOfCharacters) {
+                int numberOfSymbols = precision - scale;
+                if (numberOfSymbols <= numberOfCharacters) {
                     BigDecimal valueFormatted = valueWithoutTrailingZeros.setScale(0, roundingMode);
                     return String.valueOf(valueFormatted);
                 }
@@ -116,24 +120,41 @@ public class BigFormatter {
                     if (SIGN_SYMBOL_LENGTH + DOT_SYMBOL_LENGTH + precision + scale <= numberOfCharacters) {
                         return String.valueOf(valueWithoutTrailingZeros);
                     } else {
-                        int scaleNumberOfDigits = IntLongUtils.numberOfDigits(scale);
+//                        double numberOfVisibleSymbols = precision - scale - SIGN_SYMBOL_LENGTH - DOT_SYMBOL_LENGTH;
+//                        double numberOfAllSymbols = SIGN_SYMBOL_LENGTH + ZERO_SYMBOL_LENGTH + DOT_SYMBOL_LENGTH + (scale - precision) + precision;
+                        int numberOfVisibleSymbolsWithoutExponenta = numberOfCharacters - (SIGN_SYMBOL_LENGTH + ZERO_SYMBOL_LENGTH + DOT_SYMBOL_LENGTH + (scale - precision));
 
-                        StringBuilder pattern = new StringBuilder("0.");
-                        for (int i = 0; i < numberOfCharacters - SIGN_SYMBOL_LENGTH - DOT_SYMBOL_LENGTH - SIGN_SYMBOL_LENGTH - EXPONENT_SYMBOL_LENGTH - scaleNumberOfDigits; i++) {
-                            pattern.append("#");
+                        int exponenta = scale - precision + 1;
+                        int numberOfExponentaDigits = IntLongUtils.numberOfDigits(exponenta);
+                        int numberOfVisibleSymbolsWithExponenta = numberOfCharacters - (SIGN_SYMBOL_LENGTH + DOT_SYMBOL_LENGTH + EXPONENT_SYMBOL_LENGTH + SIGN_SYMBOL_LENGTH + numberOfExponentaDigits);
+
+                        if (numberOfVisibleSymbolsWithoutExponenta >= numberOfVisibleSymbolsWithExponenta) {
+                            int newScale = precision - (SIGN_SYMBOL_LENGTH + ZERO_SYMBOL_LENGTH + DOT_SYMBOL_LENGTH + (scale - precision));
+                            BigDecimal valueFormatted = valueWithoutTrailingZeros.setScale(newScale, roundingMode);
+                            String s = String.valueOf(valueFormatted);
+                            return s;
+                        } else {
+
+                            int scaleNumberOfDigits = IntLongUtils.numberOfDigits(scale);
+
+                            StringBuilder pattern = new StringBuilder("0.");
+                            for (int i = 0; i < numberOfCharacters - SIGN_SYMBOL_LENGTH - DOT_SYMBOL_LENGTH - SIGN_SYMBOL_LENGTH - EXPONENT_SYMBOL_LENGTH - scaleNumberOfDigits; i++) {
+                                pattern.append("#");
+                            }
+                            pattern.append("E0");
+                            String patternString = pattern.toString();
+
+                            DecimalFormat formatter = new DecimalFormat(patternString, DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+                            formatter.setRoundingMode(roundingMode);
+                            formatter.setMinimumFractionDigits(0);
+                            String formattedValue = formatter.format(value);
+
+                            return formattedValue;
                         }
-                        pattern.append("E0");
-                        String patternString = pattern.toString();
-
-                        DecimalFormat formatter = new DecimalFormat(patternString, DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-                        formatter.setRoundingMode(roundingMode);
-                        formatter.setMinimumFractionDigits(0);
-                        String formattedValue = formatter.format(value);
-
-                        return formattedValue;
                     }
                 } else {
-                    if (precision + scale <= numberOfCharacters) {
+                    int numberOfSymbols = precision + scale;
+                    if (numberOfSymbols <= numberOfCharacters) {
 //                    BigDecimal valueFormatted = valueWithoutTrailingZeros.setScale(0, roundingMode);
 //                    return String.valueOf(valueFormatted);
                         return String.valueOf(valueWithoutTrailingZeros);
@@ -162,13 +183,15 @@ public class BigFormatter {
 //
 //                return formattedValue;
             } else if (scale < 0) {
-                if (SIGN_SYMBOL_LENGTH + precision - scale <= numberOfCharacters) {
+                int numberOfSymbols1 = SIGN_SYMBOL_LENGTH + precision - scale;
+                if (numberOfSymbols1 <= numberOfCharacters) {
                     BigDecimal valueFormatted = valueWithoutTrailingZeros.setScale(0, roundingMode);
                     return String.valueOf(valueFormatted);
 //                    return String.valueOf(valueWithoutTrailingZeros);
                 }
 
-                if (SIGN_SYMBOL_LENGTH + precision - scale < numberOfCharacters) {
+                int numberOfSymbols2 = SIGN_SYMBOL_LENGTH + precision - scale;
+                if (numberOfSymbols2 < numberOfCharacters) {
                     BigDecimal valueFormatted = valueWithoutTrailingZeros.setScale(0, roundingMode);
                     return String.valueOf(valueFormatted);
                 }

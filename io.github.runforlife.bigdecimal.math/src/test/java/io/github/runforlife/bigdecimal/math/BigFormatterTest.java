@@ -941,6 +941,43 @@ public class BigFormatterTest {
     }
 
     @Test
+    public void format_nineDigits_bigExponentas() {
+//        assertEquals("-1.2E-7", BigFormatter.format(new BigDecimal("-123456789E-15"), 7, RoundingMode.HALF_EVEN));
+//        assertEquals("-1.2E-6", BigFormatter.format(new BigDecimal("-123456789E-14"), 7, RoundingMode.HALF_EVEN));
+//        assertEquals("-1.2E-5", BigFormatter.format(new BigDecimal("-123456789E-13"), 7, RoundingMode.HALF_EVEN));
+//        assertEquals("-1.2E-4", BigFormatter.format(new BigDecimal("-123456789E-12"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-0.0012", BigFormatter.format(new BigDecimal("-123456789E-11"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-0.0123", BigFormatter.format(new BigDecimal("-123456789E-10"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-0.1235", BigFormatter.format(new BigDecimal("-123456789E-9"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-1.2346", BigFormatter.format(new BigDecimal("-123456789E-8"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-12.346", BigFormatter.format(new BigDecimal("-123456789E-7"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-123.46", BigFormatter.format(new BigDecimal("-123456789E-6"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-1234.6", BigFormatter.format(new BigDecimal("-123456789E-5"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-12346", BigFormatter.format(new BigDecimal("-123456789E-4"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-123457", BigFormatter.format(new BigDecimal("-123456789E-3"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-1.2E+6", BigFormatter.format(new BigDecimal("-123456789E-2"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-1.2E+7", BigFormatter.format(new BigDecimal("-123456789E-1"), 7, RoundingMode.HALF_EVEN));
+
+        assertEquals("-1.2E+8", BigFormatter.format(new BigDecimal("-123456789E-0"), 7, RoundingMode.HALF_EVEN));
+
+        assertEquals("-1.2E+9", BigFormatter.format(new BigDecimal("-123456789E+1"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-1E+10", BigFormatter.format(new BigDecimal("-123456789E+2"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-1E+11", BigFormatter.format(new BigDecimal("-123456789E+3"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-1E+12", BigFormatter.format(new BigDecimal("-123456789E+4"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-1E+13", BigFormatter.format(new BigDecimal("-123456789E+5"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-1E+14", BigFormatter.format(new BigDecimal("-123456789E+6"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-1E+15", BigFormatter.format(new BigDecimal("-123456789E+7"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-1E+16", BigFormatter.format(new BigDecimal("-123456789E+8"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-1E+17", BigFormatter.format(new BigDecimal("-123456789E+9"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-1E+18", BigFormatter.format(new BigDecimal("-123456789E+10"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-1E+19", BigFormatter.format(new BigDecimal("-123456789E+11"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-1E+20", BigFormatter.format(new BigDecimal("-123456789E+12"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-1E+21", BigFormatter.format(new BigDecimal("-123456789E+13"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-1E+22", BigFormatter.format(new BigDecimal("-123456789E+14"), 7, RoundingMode.HALF_EVEN));
+        assertEquals("-1E+23", BigFormatter.format(new BigDecimal("-123456789E+15"), 7, RoundingMode.HALF_EVEN));
+    }
+
+    @Test
     public void asdf() {
     }
 }
