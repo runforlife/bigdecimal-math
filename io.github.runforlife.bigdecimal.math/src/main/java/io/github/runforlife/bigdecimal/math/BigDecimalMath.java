@@ -7,9 +7,7 @@ import io.github.runforlife.bigdecimal.math.internal.SinCalculator;
 import io.github.runforlife.bigdecimal.math.internal.SinhCalculator;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.math.MathContext;
-import java.math.RoundingMode;
 import java.util.List;
 
 import static java.math.BigDecimal.ONE;
@@ -1176,95 +1174,6 @@ public class BigDecimalMath {
         MathContext mc = new MathContext(mathContext.getPrecision() + 6, mathContext.getRoundingMode());
         BigDecimal result = x.multiply(pi(mc).divide(ONE_HUNDRED_EIGHTY, mc), mc);
         return round(result, mathContext);
-    }
-
-    /**
-     * Fraction calculation using Continued fraction algorithm.
-     * <p>See: <a href="https://jonisalonen.com/2012/converting-decimal-numbers-to-ratios/">Converting decimal numbers to fractions</a></p>
-     *
-     * <p>Examples:</p>
-     * <ul>
-     * <li><code>convertToFraction(new BigDecimal("0.894784"), new BigDecimal("9999999999999999999999"), new BigDecimal("9999999999999999999999"), 12, MathContext.DECIMAL128);</code> returns 13981/15625</li>
-     * </ul>
-     *
-     * @param value               decimal
-     * @param maxNumeratorValue   maximum numerator value to calculate
-     * @param maxDenominatorValue maximum denominator value to calculate
-     * @param tolerance           uses in calculation
-     * @param mathContext         the {@link MathContext} used for the calculation and result.
-     * @return {@link BigIntegerFraction}
-     * @throws IllegalArgumentException
-     * @throws ArithmeticException
-     */
-    public static BigIntegerFraction toFraction(BigDecimal value,
-                                                BigDecimal maxNumeratorValue,
-                                                BigDecimal maxDenominatorValue,
-                                                int tolerance,
-                                                MathContext mathContext) throws IllegalArgumentException, ArithmeticException {
-        int mcPrecision = mathContext.getPrecision();
-        if (tolerance >= mcPrecision) {
-            throw new IllegalArgumentException("Tolerance must be less than MathContext precision");
-        }
-        BigDecimal toleranceBigDecimal = new BigDecimal("1E-" + (mcPrecision - tolerance));
-
-        MathContext mc = new MathContext(mcPrecision + 5, mathContext.getRoundingMode());
-
-        BigDecimal remainder = value.remainder(BigDecimal.ONE, mc);
-        if (remainder.compareTo(BigDecimal.ZERO) == 0) {
-            if (value.compareTo(maxNumeratorValue) > 0) {
-                throw new ArithmeticException("Unable to find numerator for " + value + " value because it reached the max numerator limit " + maxNumeratorValue);
-            }
-            BigInteger numerator = value.toBigInteger();
-            return new BigIntegerFraction(numerator, BigInteger.ONE);
-        }
-
-        BigDecimal pn1 = BigDecimal.ONE;
-        BigDecimal pn2 = BigDecimal.ZERO;
-        BigDecimal qn1 = BigDecimal.ZERO;
-        BigDecimal qn2 = BigDecimal.ONE;
-        BigDecimal x = value;
-
-        BigDecimal left;
-        BigDecimal right;
-
-        do {
-            BigDecimal a = x.setScale(0, RoundingMode.FLOOR);
-
-            BigDecimal aux = pn1;
-            pn1 = a.multiply(pn1).add(pn2);
-            if (pn1.compareTo(maxNumeratorValue) > 0) {
-                throw new ArithmeticException("Unable to find numerator for " + value + " value because it reached the max numerator limit " + maxNumeratorValue);
-            }
-
-            pn2 = aux;
-            aux = qn1;
-            qn1 = a.multiply(qn1).add(qn2);
-            if (qn1.compareTo(maxDenominatorValue) > 0) {
-                throw new ArithmeticException("Unable to find denominator for " + value + " value because it reached the max denominator limit " + maxDenominatorValue);
-            }
-
-            BigDecimal numeratorDivideDenominator = pn1.divide(qn1, mc);
-            left = value.subtract(numeratorDivideDenominator).abs();
-            right = value.multiply(toleranceBigDecimal);
-
-            qn2 = aux;
-            BigDecimal xSubtractA = x.subtract(a);
-            if (xSubtractA.compareTo(BigDecimal.ZERO) == 0) {
-                break;
-            }
-            x = BigDecimal.ONE.divide(xSubtractA, mc);
-        } while (left.compareTo(right) > 0);
-
-        BigInteger numerator = pn1.toBigInteger();
-        if (new BigDecimal(numerator).compareTo(pn1) != 0) {
-            throw new ArithmeticException("Numerator is not an Integer: " + pn1);
-        }
-        BigInteger denominator = qn1.toBigInteger();
-        if (new BigDecimal(denominator).compareTo(qn1) != 0) {
-            throw new ArithmeticException("Denominator is not an Integer: " + qn1);
-        }
-
-        return new BigIntegerFraction(numerator, denominator);
     }
 
     //TODO replace with fast add
