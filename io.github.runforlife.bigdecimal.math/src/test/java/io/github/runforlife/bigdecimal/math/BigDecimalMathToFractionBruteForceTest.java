@@ -13,9 +13,10 @@ import java.math.RoundingMode;
 import java.util.Random;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
-public class BigDecimalMathConvertToFractionBruteForceTest {
+public class BigDecimalMathToFractionBruteForceTest {
     public static final BigDecimal MAX_DECIMAL_22_DIGITS = new BigDecimal("9999999999999999999999");
     public static final int TOLERANCE = 12;
 
@@ -27,10 +28,10 @@ public class BigDecimalMathConvertToFractionBruteForceTest {
     }
 
     @Test
-    public void convertDecimalToFraction_valueIsInteger() {
+    public void toFraction_valueIsInteger() {
         BigDecimal integerValue = BigDecimal.TEN;
 
-        BigIntegerFraction actualBigIntegerFraction = BigDecimalMath.convertToFraction(
+        BigIntegerFraction actualBigIntegerFraction = BigDecimalMath.toFraction(
                 integerValue,
                 MAX_DECIMAL_22_DIGITS,
                 MAX_DECIMAL_22_DIGITS,
@@ -43,8 +44,8 @@ public class BigDecimalMathConvertToFractionBruteForceTest {
     }
 
     @Test
-    public void convertDecimalToFraction_specialCase() {
-        BigIntegerFraction actualBigIntegerFraction = BigDecimalMath.convertToFraction(
+    public void toFraction_specialCase() {
+        BigIntegerFraction actualBigIntegerFraction = BigDecimalMath.toFraction(
                 new BigDecimal("0.4578995854774774581478"),
                 MAX_DECIMAL_22_DIGITS,
                 MAX_DECIMAL_22_DIGITS,
@@ -57,36 +58,51 @@ public class BigDecimalMathConvertToFractionBruteForceTest {
     }
 
     @Test
-    public void convertDecimalToFraction_bruteForceByteNumbers() {
-        long max = 128;
+    public void toFraction_bruteForceByteNumbers() {
+        long max = 384;
         for (int i = 1; i < max; i++) {
             for (int k = 1; k < max; k++) {
                 BigDecimal a = BigDecimal.valueOf(i);
                 BigDecimal b = BigDecimal.valueOf(k);
-                convertDecimalToFraction_assertLite(a, b, k);
+                toFraction_assertLite(a, b, k);
             }
         }
     }
 
     @Test
-    public void convertDecimalToFraction_bruteForceLongNumbers() {
-        for (int i = 0; i < 2500; i++) {
+    public void toFraction_bruteForceLongNumbers() {
+        for (int i = 0; i < 2_500_000; i++) {
             BigDecimal a = BigDecimal.valueOf(random.nextLong());
             BigDecimal b = BigDecimal.valueOf(random.nextLong());
-            convertDecimalToFraction_assertLite(a, b, i);
+            toFraction_assertLite(a, b, i);
         }
     }
 
     @Test
-    public void convertDecimalToFraction_bruteForceBigNumbers() {
-        for (int i = 0; i < 5000; i++) {
-            BigDecimal a = randomBigDecimalNUmberOfDigits(MathContext.DECIMAL128.getPrecision());
-            BigDecimal b = randomBigDecimalNUmberOfDigits(MathContext.DECIMAL128.getPrecision());
-            convertDecimalToFraction_assertLite(a, b, i);
+    public void toFraction_bruteForceBigNumbers() {
+        for (int i = 0; i < 5_000_000; i++) {
+            BigDecimal a = randomBigDecimalNumberOfDigits(MathContext.DECIMAL128.getPrecision());
+            BigDecimal b = randomBigDecimalNumberOfDigits(MathContext.DECIMAL128.getPrecision());
+            toFraction_assertLite(a, b, i);
         }
     }
 
-    void convertDecimalToFraction_assertLite(BigDecimal a, BigDecimal b, int i) {
+    @Test
+    public void toFraction_bruteForce_nextBigDecimal() {
+        for (int i = 0; i < 5_000_000; i++) {
+            BigDecimal a = randomBigDecimalNumberOfDigits(MathContext.DECIMAL128.getPrecision());
+            BigDecimal b = randomBigDecimalNumberOfDigits(MathContext.DECIMAL128.getPrecision());
+            toFraction_assertLite(a, b, i);
+        }
+    }
+
+    @Test
+    public void run_toFraction_assertLite() {
+        toFraction_assertLite(new BigDecimal("1494924330314517969"), new BigDecimal("2620695565903685639"), -1);
+        toFraction_assertLite(new BigDecimal("2321289097316917783435"), new BigDecimal("80466074358344677368918834"), -1);
+    }
+
+    void toFraction_assertLite(BigDecimal a, BigDecimal b, int i) {
         MathContext fractionMathContext = new MathContext(29 - TOLERANCE, RoundingMode.HALF_EVEN);
 
         BigDecimal decimal = a.divide(b, MathContext.DECIMAL128);
@@ -98,7 +114,7 @@ public class BigDecimalMathConvertToFractionBruteForceTest {
 
         BigIntegerFraction bigIntegerFraction;
         try {
-            bigIntegerFraction = BigDecimalMath.convertToFraction(
+            bigIntegerFraction = BigDecimalMath.toFraction(
                     decimal,
                     MAX_DECIMAL_22_DIGITS,
                     MAX_DECIMAL_22_DIGITS,
@@ -116,12 +132,7 @@ public class BigDecimalMathConvertToFractionBruteForceTest {
         BigInteger denominator = bigIntegerFraction.getDenominator();
 
         BigDecimal decimalExpected = decimal.round(fractionMathContext);
-        BigDecimal decimalActual;
-        if (bigIntegerFraction.isPositive()) {
-            decimalActual = new BigDecimal(numerator).divide(new BigDecimal(denominator), fractionMathContext);
-        } else {
-            decimalActual = new BigDecimal(numerator).divide(new BigDecimal(denominator), fractionMathContext).negate(fractionMathContext);
-        }
+        BigDecimal decimalActual___ = new BigDecimal(numerator).divide(new BigDecimal(denominator), fractionMathContext);
 
         String message = "i                      :" + i + "\n" +
                 "numerator              :" + numerator + "\n" +
@@ -129,16 +140,16 @@ public class BigDecimalMathConvertToFractionBruteForceTest {
                 "a                      :" + a + "\n" +
                 "b                      :" + b + "\n";
 
-        assertEquals(message, decimalExpected, decimalActual);
+        assertEquals(message, decimalExpected, decimalActual___);
         assertTrue("a          : " + a + "\n" + "numerator  : " + numerator, new BigDecimal(numerator).compareTo(MAX_DECIMAL_22_DIGITS) <= 0);
         assertTrue("b          : " + b + "\n" + "denominator: " + denominator, new BigDecimal(denominator).compareTo(MAX_DECIMAL_22_DIGITS) <= 0);
     }
 
     @Test
-    public void convertDecimalToFraction_bug() {
+    public void toFraction_bug() {
         BigDecimal decimalExpected = new BigDecimal("380.8");
 
-        BigIntegerFraction bigIntegerFraction = BigDecimalMath.convertToFraction(
+        BigIntegerFraction bigIntegerFraction = BigDecimalMath.toFraction(
                 decimalExpected,
                 MAX_DECIMAL_22_DIGITS,
                 MAX_DECIMAL_22_DIGITS,
@@ -151,12 +162,12 @@ public class BigDecimalMathConvertToFractionBruteForceTest {
     }
 
     @Test
-    public void convertDecimalToFraction_19_332384805645034() {
+    public void toFraction_bug_19_332384805645034() {
         BigDecimal a = new BigDecimal("19");
         BigDecimal b = new BigDecimal("332384805645034");
         BigDecimal decimalExpected = a.divide(b, MathContext.DECIMAL128);
 
-        BigIntegerFraction bigIntegerFraction = BigDecimalMath.convertToFraction(
+        BigIntegerFraction bigIntegerFraction = BigDecimalMath.toFraction(
                 decimalExpected,
                 MAX_DECIMAL_22_DIGITS,
                 MAX_DECIMAL_22_DIGITS,
@@ -169,13 +180,13 @@ public class BigDecimalMathConvertToFractionBruteForceTest {
     }
 
     @Test
-    public void convertDecimalToFraction_8div7mult6() {
+    public void toFraction_bug_8div7mult6() {
         BigDecimal a = new BigDecimal("8");
         BigDecimal b = new BigDecimal("7");
         BigDecimal c = new BigDecimal("6");
         BigDecimal decimalExpected = (a.divide(b, MathContext.DECIMAL128)).multiply(c, MathContext.DECIMAL128);
 
-        BigIntegerFraction bigIntegerFraction = BigDecimalMath.convertToFraction(
+        BigIntegerFraction bigIntegerFraction = BigDecimalMath.toFraction(
                 decimalExpected,
                 MAX_DECIMAL_22_DIGITS,
                 MAX_DECIMAL_22_DIGITS,
@@ -188,15 +199,15 @@ public class BigDecimalMathConvertToFractionBruteForceTest {
     }
 
     @Test
-    public void convertDecimalToFraction_bruteForce() {
-        long max = 128;
+    public void toFraction_bruteForce() {
+        long max = 1024;
         for (long b = 1; b < max; b++) {
             for (long a = 1; a < max; a++) {
                 long commonDenominator = findCommonDenominator(a, b);
 
                 try {
                     BigDecimal expectedBigDecimal = (BigDecimal.valueOf(a)).divide(BigDecimal.valueOf(b), MathContext.DECIMAL128);
-                    BigIntegerFraction actulaBigIntegerFraction = BigDecimalMath.convertToFraction(
+                    BigIntegerFraction actulaBigIntegerFraction = BigDecimalMath.toFraction(
                             expectedBigDecimal,
                             MAX_DECIMAL_22_DIGITS,
                             MAX_DECIMAL_22_DIGITS,
@@ -226,7 +237,7 @@ public class BigDecimalMathConvertToFractionBruteForceTest {
         return new BigDecimal(BigInteger.valueOf(random.nextInt()), randomScale);
     }
 
-    private BigDecimal randomBigDecimalNUmberOfDigits(int numberOfDigits) {
+    private BigDecimal randomBigDecimalNumberOfDigits(int numberOfDigits) {
         long value1 = random.nextLong();
         long value2 = Math.abs(random.nextLong());
         String valueAsString = value1 + "" + value2;

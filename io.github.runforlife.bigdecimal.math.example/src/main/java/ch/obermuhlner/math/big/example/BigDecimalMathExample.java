@@ -42,7 +42,7 @@ public class BigDecimalMathExample {
 		System.out.println("  acosh(2)                     = " + BigDecimalMath.acosh(BigDecimal.valueOf(2), mathContext));
 		System.out.println("  atanh(0.1)                   = " + BigDecimalMath.atanh(BigDecimal.valueOf(0.1), mathContext));
 		System.out.println("  factorial(6)                 = " + BigDecimalMath.factorial(6));
-		System.out.println("  convertToFraction(0.45...)   = " + BigDecimalMath.convertToFraction(
+		System.out.println("  convertToFraction(0.45...)   = " + BigDecimalMath.toFraction(
 				new BigDecimal("74536281942873023417").divide(new BigDecimal("17493298347507816737"), mathContext),
 				new BigDecimal("99999999999999999999"),
 				new BigDecimal("99999999999999999999"),
