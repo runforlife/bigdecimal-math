@@ -20,14 +20,14 @@ public class ThreadUtil {
         for (int i = 0; i < threadCount; i++) {
             final int id = i;
             Thread thread = new Thread(() -> {
-                System.out.println("STARTED " + id);
+//                System.out.println("STARTED " + id);
                 try {
                     callable.call();
                 } catch (Throwable e) {
-                    System.out.println("EXCEPTION " + e);
+//                    System.out.println("EXCEPTION " + e);
                     exception.set(e);
                 } finally {
-                    System.out.println("FINISHED " + id);
+//                    System.out.println("FINISHED " + id);
                     countDownLatch.countDown();
                 }
             });
