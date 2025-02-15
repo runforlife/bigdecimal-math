@@ -1,4 +1,4 @@
-package io.github.runforlife.bigdecimal.math.math;
+package io.github.runforlife.bigdecimal.math.rational;
 
 import static io.github.runforlife.bigdecimal.math.BigRational.ONE;
 import static io.github.runforlife.bigdecimal.math.BigRational.ZERO;
