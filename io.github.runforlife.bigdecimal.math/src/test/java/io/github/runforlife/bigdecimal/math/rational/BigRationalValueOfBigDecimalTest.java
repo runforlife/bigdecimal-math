@@ -28,6 +28,10 @@ public class BigRationalValueOfBigDecimalTest extends AbstractBigDecimalTest {
     //Max count: 67
     private static final int MAX_ITERATIONS = 100;
 
+//    Max count: 66
+//    Min epsilon: 1E-43
+//    Max precision: 43
+
     private static final int TRY_EPSILON_COUNT = 100;
     private static final int REPEAT_TIMES = 100_000_000;
     private static final int TRY_MATH_CONTEXT_COUNT = 100;
