@@ -23,7 +23,7 @@ public class BigRational2Test extends AbstractBigDecimalTest {
     private static final BigDecimal DEFAULT_EPSILON = new BigDecimal("1");
     private static final MathContext DEFAULT_MATH_CONTEXT = MathContext.DECIMAL128;
 
-    private static final int REPEAT_TIMES = 25_000_000;
+    private static final int REPEAT_TIMES = 100_000_000;
     private static final int TRY_MATH_CONTEXT_COUNT = 100;
     private static final int TRY_EPSILON_COUNT = 100;
 
@@ -40,28 +40,34 @@ public class BigRational2Test extends AbstractBigDecimalTest {
     public void toFraction_cases() {
         boolean success = false;
         MathContext calculationMathContext = DEFAULT_MATH_CONTEXT;
-        for (int i = 0; i < adaptCount(REPEAT_TIMES); i++) {
+
+        for (int i = 0; i < TRY_MATH_CONTEXT_COUNT; i++) {
             BigDecimal epsilon = DEFAULT_EPSILON;
-            for (int k = 0; k < adaptCount(TRY_EPSILON_COUNT); k++) {
+
+            for (int k = 0; k < TRY_EPSILON_COUNT; k++) {
                 epsilon = epsilon.divide(BigDecimal.TEN, MathContext.DECIMAL128);
                 success = toFraction(
-                        new BigDecimal("76234252492721"),
-                        new BigDecimal("73548990888724680159"),
+                        new BigDecimal("-16369799"),
+                        new BigDecimal("-2177911267694636974"),
                         epsilon,
                         calculationMathContext
                 );
+
                 if (success) {
                     break;
                 }
             }
+
             if (success) {
                 break;
             }
+
             calculationMathContext = new MathContext(
                     calculationMathContext.getPrecision() + 1,
                     calculationMathContext.getRoundingMode()
             );
         }
+
         if (!success) {
             fail("fail");
         }
