@@ -8,7 +8,6 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
-import java.math.RoundingMode;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -21,15 +20,10 @@ public class BigRational2Test extends AbstractBigDecimalTest {
     private static final Object LOCK = new Object();
 
     private static final BigInteger MAX_DECIMAL_22_DIGITS = new BigInteger("9999999999999999999999");
-    private static final BigDecimal DEFAULT_EPSILON_00 = new BigDecimal("1");
-    private static final BigDecimal DEFAULT_EPSILON_20 = new BigDecimal("1E-20");
-    private static final BigDecimal DEFAULT_EPSILON_35 = new BigDecimal("1E-35");
+    private static final BigDecimal DEFAULT_EPSILON = new BigDecimal("1");
+    private static final MathContext DEFAULT_MATH_CONTEXT = MathContext.DECIMAL128;
 
-    //    private static final MathContext CALCULATION_MATH_CONTEXT = MathContext.DECIMAL128;
-    private static final MathContext CALCULATION_MATH_CONTEXT = MathContext.DECIMAL128;
-    private static final MathContext FRACTION_MATH_CONTEXT = new MathContext(MathContext.DECIMAL128.getPrecision(), RoundingMode.HALF_EVEN);
-
-    private static final int REPEAT_TIMES = 1_000_000;
+    private static final int REPEAT_TIMES = 25_000_000;
     private static final int TRY_MATH_CONTEXT_COUNT = 100;
     private static final int TRY_EPSILON_COUNT = 100;
 
@@ -45,9 +39,9 @@ public class BigRational2Test extends AbstractBigDecimalTest {
     @Test
     public void toFraction_cases() {
         boolean success = false;
-        MathContext calculationMathContext = CALCULATION_MATH_CONTEXT;
+        MathContext calculationMathContext = DEFAULT_MATH_CONTEXT;
         for (int i = 0; i < adaptCount(REPEAT_TIMES); i++) {
-            BigDecimal epsilon = DEFAULT_EPSILON_00;
+            BigDecimal epsilon = DEFAULT_EPSILON;
             for (int k = 0; k < adaptCount(TRY_EPSILON_COUNT); k++) {
                 epsilon = epsilon.divide(BigDecimal.TEN, MathContext.DECIMAL128);
                 success = toFraction(
@@ -76,7 +70,7 @@ public class BigRational2Test extends AbstractBigDecimalTest {
     @Test
     public void valueOf() throws Throwable {
         BigRational2Test bigRational2Test = this;
-        AtomicReference<BigDecimal> minEpsilon = new AtomicReference<>(DEFAULT_EPSILON_20);
+        AtomicReference<BigDecimal> minEpsilon = new AtomicReference<>(DEFAULT_EPSILON);
         AtomicReference<MathContext> maxMathContext = new AtomicReference<>(MathContext.DECIMAL128);
 
         runMultiThreaded(() -> {
@@ -89,6 +83,10 @@ public class BigRational2Test extends AbstractBigDecimalTest {
 
                 BigDecimal a = nextBigDecimal(22);
                 BigDecimal b = nextBigDecimal(22);
+
+                if (b.compareTo(BigDecimal.ZERO) == 0) {
+                    continue;
+                }
 
                 BigInteger aBi = a.toBigInteger();
                 BigInteger bBi = b.toBigInteger();
