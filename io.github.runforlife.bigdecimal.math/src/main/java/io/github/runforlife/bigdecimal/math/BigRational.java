@@ -7,7 +7,6 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 /**
@@ -966,7 +965,7 @@ public class BigRational extends Number implements Comparable<BigRational>, Seri
 	 * limitations under the License.
 	 *
 	 * <p>
-	 * The code was taken and adapted from the <a href="https://commons.apache.org/proper/commons-numbers/commons-numbers-docs/jacoco-aggregate/commons-numbers-fraction/org.apache.commons.numbers.fraction/index.source.html">org.apache.commons.numbers.fraction</a>
+	 * The code was taken and adapted from the <a href="https://github.com/apache/commons-numbers/blob/master/commons-numbers-fraction/src/main/java/org/apache/commons/numbers/fraction/Fraction.java">org.apache.commons.numbers.fraction</a>
 	 */
 	public static final BigDecimal DEFAULT_EPSILON = BigDecimal.valueOf(1e-5);
 	private static final int DEFAULT_MAX_ITERATIONS = 100;
@@ -991,7 +990,7 @@ public class BigRational extends Number implements Comparable<BigRational>, Seri
 	 * Create a fraction given the double value.
 	 *
 	 * <p>
-	 * The code was taken and adapted from the <a href="https://commons.apache.org/proper/commons-numbers/commons-numbers-docs/jacoco-aggregate/commons-numbers-fraction/org.apache.commons.numbers.fraction/index.source.html">org.apache.commons.numbers.fraction</a>
+	 * The code was taken and adapted from the <a href="https://github.com/apache/commons-numbers/blob/master/commons-numbers-fraction/src/main/java/org/apache/commons/numbers/fraction/Fraction.java">org.apache.commons.numbers.fraction</a>
 	 *
 	 * @param value Value to convert to a fraction.
 	 * @throws IllegalArgumentException if the given {@code value} is NaN or infinite.
@@ -1023,7 +1022,7 @@ public class BigRational extends Number implements Comparable<BigRational>, Seri
      * Create a fraction given the double value and maximum error allowed.
      *
 	 * <p>
-     * The code was taken and adapted from the <a href="https://commons.apache.org/proper/commons-numbers/commons-numbers-docs/jacoco-aggregate/commons-numbers-fraction/org.apache.commons.numbers.fraction/index.source.html">org.apache.commons.numbers.fraction</a>
+     * The code was taken and adapted from the <a href="https://github.com/apache/commons-numbers/blob/master/commons-numbers-fraction/src/main/java/org/apache/commons/numbers/fraction/Fraction.java">org.apache.commons.numbers.fraction</a>
      *
      * <p>
      * References:
@@ -1078,7 +1077,7 @@ public class BigRational extends Number implements Comparable<BigRational>, Seri
 	 * Create a fraction given the double value and maximum denominator.
 	 *
 	 * <p>
-	 * The code was taken and adapted from the <a href="https://commons.apache.org/proper/commons-numbers/commons-numbers-docs/jacoco-aggregate/commons-numbers-fraction/org.apache.commons.numbers.fraction/index.source.html">org.apache.commons.numbers.fraction</a>
+	 * The code was taken and adapted from the <a href="https://github.com/apache/commons-numbers/blob/master/commons-numbers-fraction/src/main/java/org/apache/commons/numbers/fraction/Fraction.java">org.apache.commons.numbers.fraction</a>
 	 *
 	 * <p>
 	 * References:
@@ -1133,7 +1132,7 @@ public class BigRational extends Number implements Comparable<BigRational>, Seri
 	 * allowed or the maximum number of denominator digits.
 	 *
 	 * <p>
-	 * The code was taken and adapted from the <a href="https://commons.apache.org/proper/commons-numbers/commons-numbers-docs/jacoco-aggregate/commons-numbers-fraction/org.apache.commons.numbers.fraction/index.source.html">org.apache.commons.numbers.fraction</a>
+	 * The code was taken and adapted from the <a href="https://github.com/apache/commons-numbers/blob/master/commons-numbers-fraction/src/main/java/org/apache/commons/numbers/fraction/Fraction.java">org.apache.commons.numbers.fraction</a>
 	 *
 	 * <p>
 	 * NOTE: This constructor is called with:

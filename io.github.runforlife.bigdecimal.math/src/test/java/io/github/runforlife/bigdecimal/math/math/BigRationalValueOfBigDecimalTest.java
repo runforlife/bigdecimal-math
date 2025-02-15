@@ -8,6 +8,7 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -16,20 +17,23 @@ import static io.github.runforlife.bigdecimal.math.util.ThreadUtil.runMultiThrea
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
-public class BigRational2Test extends AbstractBigDecimalTest {
+public class BigRationalValueOfBigDecimalTest extends AbstractBigDecimalTest {
     private static final Object LOCK = new Object();
 
     private static final BigInteger MAX_DECIMAL_22_DIGITS = new BigInteger("9999999999999999999999");
-    private static final BigDecimal DEFAULT_EPSILON = new BigDecimal("1");
-    private static final MathContext DEFAULT_MATH_CONTEXT = MathContext.DECIMAL128;
+    private static final BigDecimal DEFAULT_EPSILON = new BigDecimal("1E-45");
+    private static final MathContext DEFAULT_MATH_CONTEXT = new MathContext(45, RoundingMode.HALF_EVEN);
 
-    private static final int REPEAT_TIMES = 100_000_000;
+    private static final int MAX_ITERATIONS = 100;
+    private static final int REPEAT_TIMES = 100_000;
     private static final int TRY_MATH_CONTEXT_COUNT = 100;
     private static final int TRY_EPSILON_COUNT = 100;
 
+    //Max count: 67
+    //Min epsilon: 1E-45
+    //Max precision: 45
+
     private Random random;
-    private volatile int maxIterations = 10_000;
-    private AtomicBoolean failed = new AtomicBoolean();
 
     @Before
     public void setUp() {
@@ -75,7 +79,9 @@ public class BigRational2Test extends AbstractBigDecimalTest {
 
     @Test
     public void valueOf() throws Throwable {
-        BigRational2Test bigRational2Test = this;
+        AtomicBoolean failed = new AtomicBoolean();
+
+        BigRationalValueOfBigDecimalTest bigRational2Test = this;
         AtomicReference<BigDecimal> minEpsilon = new AtomicReference<>(DEFAULT_EPSILON);
         AtomicReference<MathContext> maxMathContext = new AtomicReference<>(MathContext.DECIMAL128);
 
@@ -173,7 +179,7 @@ public class BigRational2Test extends AbstractBigDecimalTest {
                     decimal,
                     epsilon,
                     MAX_DECIMAL_22_DIGITS,
-                    maxIterations,
+                    MAX_ITERATIONS,
                     calculationMathContext
             );
         } catch (ArithmeticException e) {
@@ -200,16 +206,7 @@ public class BigRational2Test extends AbstractBigDecimalTest {
             expectedB = expectedB.negate();
         }
 
-        if (numerator.toBigInteger().compareTo(expectedA) != 0 || denominator.toBigInteger().compareTo(expectedB) != 0) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private BigDecimal nextBigDecimal() {
-        int randomScale = (int) (random.nextFloat() * 100 - 50);
-        return new BigDecimal(BigInteger.valueOf(random.nextInt()), randomScale);
+        return numerator.toBigInteger().compareTo(expectedA) == 0 && denominator.toBigInteger().compareTo(expectedB) == 0;
     }
 
     private BigDecimal nextBigDecimal(int numberOfDigits) {
@@ -226,24 +223,15 @@ public class BigRational2Test extends AbstractBigDecimalTest {
             }
         }
         int randomLength = (int) ((numberOfDigits - 1) * random.nextFloat() + 2);
-        if (randomLength < valueAsString.length()) {
-            valueAsString = valueAsString.substring(0, randomLength);
-        }
-        return new BigDecimal(valueAsString);
-    }
-
-    private long findCommonDenominator(long a, long b) {
-        long commonDenominator = 1;
-        long maxAB = Math.max(a, b);
-        for (long i = 2; i <= maxAB; i++) {
-            if (a % i == 0 && b % i == 0) {
-                a = a / i;
-                b = b / i;
-                maxAB = Math.max(a, b);
-                commonDenominator = commonDenominator * i;
-                i = 1;
+        if (valueAsString.contains("-")) {
+            if (randomLength + 1 < valueAsString.length()) {
+                valueAsString = valueAsString.substring(0, randomLength + 1);
+            }
+        } else {
+            if (randomLength < valueAsString.length()) {
+                valueAsString = valueAsString.substring(0, randomLength);
             }
         }
-        return commonDenominator;
+        return new BigDecimal(valueAsString);
     }
 }
