@@ -78,7 +78,7 @@ public class BigRationalValueOfBigDecimalTest extends AbstractBigDecimalTest {
     }
 
     @Test
-    public void valueOf() throws Throwable {
+    public void valueOf_runMultiThreaded() throws Throwable {
         AtomicBoolean failed = new AtomicBoolean();
 
         BigRationalValueOfBigDecimalTest bigRational2Test = this;
