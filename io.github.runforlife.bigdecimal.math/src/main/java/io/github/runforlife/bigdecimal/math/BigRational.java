@@ -1052,7 +1052,7 @@ public class BigRational extends Number implements Comparable<BigRational>, Seri
 		}
 		if (epsilon.compareTo(BigDecimal.ZERO) >= 0) {
 			return BigRational.valueOf(
-					value, epsilon, BigInteger.valueOf(Integer.MIN_VALUE), maxIterations, mathContext);
+					value, epsilon, BigDecimal.valueOf(Integer.MAX_VALUE), BigDecimal.valueOf(Integer.MAX_VALUE), maxIterations, mathContext);
 		}
 		throw new IllegalArgumentException("Epsilon must be positive: " + maxIterations);
 	}
@@ -1097,16 +1097,17 @@ public class BigRational extends Number implements Comparable<BigRational>, Seri
 	 * @return a new instance.
 	 */
 	public static BigRational valueOf(BigDecimal value,
-									  BigInteger maxDenominator,
+									  BigDecimal maxNumerator,
+									  BigDecimal maxDenominator,
 									  MathContext mathContext) {
 		if (value.compareTo(BigDecimal.ZERO) == 0) {
 			return ZERO;
 		}
-		if (maxDenominator.compareTo(BigInteger.ZERO) == 0) {
+		if (maxDenominator.compareTo(BigDecimal.ZERO) == 0) {
 			// Re-use the zero denominator message
-			throw new IllegalArgumentException("Denominator must be different from 0");
+			throw new IllegalArgumentException("MaxDenominator must be different from 0");
 		}
-		return BigRational.valueOf(value, BigDecimal.ZERO, maxDenominator, DEFAULT_MAX_ITERATIONS, mathContext);
+		return BigRational.valueOf(value, BigDecimal.ZERO, maxNumerator, maxDenominator, DEFAULT_MAX_ITERATIONS, mathContext);
 	}
 
 	public static volatile int MAX_N = 0;
@@ -1170,11 +1171,26 @@ public class BigRational extends Number implements Comparable<BigRational>, Seri
 	 */
 	public static BigRational valueOf(BigDecimal value,
 									  BigDecimal epsilon,
-									  BigInteger maxDenominator,
+									  BigDecimal maxNumerator,
+									  BigDecimal maxDenominator,
 									  int maxIterations,
 									  MathContext mathContext) {
+		if (value.compareTo(BigDecimal.ZERO) == 0) {
+			return ZERO;
+		}
+		if (value.compareTo(BigDecimal.ONE) == 0) {
+			return ONE;
+		}
 		if (value.scale() == Integer.MAX_VALUE) {
 			throw new IllegalArgumentException("Not finite: " + value);
+		}
+
+		BigDecimal remainder = value.remainder(BigDecimal.ONE, mathContext);
+		if (remainder.compareTo(BigDecimal.ZERO) == 0) {
+			if (value.compareTo(maxNumerator) > 0) {
+				throw new ArithmeticException("Unable to find numerator for " + value + " value because it reached the max numerator limit " + maxNumerator);
+			}
+			return new BigRational(value, BigDecimal.ONE);
 		}
 
 		// Remove sign, this is restored at the end.
@@ -1195,7 +1211,7 @@ public class BigRational extends Number implements Comparable<BigRational>, Seri
 			return new BigRational(new BigDecimal(den), new BigDecimal(num));
 		}
 
-		BigInteger maxDen = maxDenominator.abs();
+		BigInteger maxDen = maxDenominator.abs().toBigInteger();
 		BigInteger p0 = BigInteger.ONE;
 		BigInteger q0 = BigInteger.ZERO;
 		BigInteger p1 = a0;
@@ -1251,15 +1267,25 @@ public class BigRational extends Number implements Comparable<BigRational>, Seri
 		}
 
 		// Restore the sign.
-		if (new BigDecimal(num).signum() * new BigDecimal(den).signum() != value.signum()) {
-			if (num.equals(BigInteger.valueOf(Integer.MIN_VALUE))) {
-				den = den.negate();
+		BigDecimal numerator = new BigDecimal(num);
+		BigDecimal denominator = new BigDecimal(den);
+
+		if (numerator.signum() * denominator.signum() != value.signum()) {
+			if (numerator.toBigInteger().equals(BigInteger.valueOf(Integer.MIN_VALUE))) {
+				denominator = denominator.negate();
 			} else {
-				num = num.negate();
+				numerator = numerator.negate();
 			}
 		}
 
-		return new BigRational(new BigDecimal(num), new BigDecimal(den));
+		if (numerator.compareTo(maxNumerator) > 0) {
+			throw new ArithmeticException("Unable to find numerator for " + value + " value because it reached the max numerator limit " + maxNumerator);
+		}
+		if (denominator.compareTo(maxDenominator) > 0) {
+			throw new ArithmeticException("Unable to find denominator for " + value + " value because it reached the max denominator limit " + maxDenominator);
+		}
+
+		return new BigRational(numerator, denominator);
 	}
 
 	/**
