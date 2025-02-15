@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class ThreadUtil {
     public static void runMultiThreaded(Runnable runnable) throws Throwable {
-        runMultiThreaded(10, runnable);
+        runMultiThreaded(20, runnable);
     }
 
     public static void runMultiThreaded(int threadCount, Runnable runnable) throws Throwable {

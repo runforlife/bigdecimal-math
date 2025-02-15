@@ -948,6 +948,325 @@ public class BigRational extends Number implements Comparable<BigRational>, Seri
 		}
 	}
 
+
+	/**
+	 * Calculates a rational number using Continued fraction algorithm.
+	 * <p>See: <a href="https://en.wikipedia.org/wiki/Continued_fraction">Continued fraction</a></p>
+	 *
+	 *
+	 * @param value               decimal
+	 * @param mathContext         the {@link MathContext} used for the calculation.
+	 * @return the rational number
+	 */
+//    public static BigRational valueOf(BigDecimal value, MathContext mathContext) throws IllegalArgumentException, ArithmeticException {
+//		if (value.compareTo(BigDecimal.ZERO) == 0) {
+//			return ZERO;
+//		}
+//		if (value.compareTo(BigDecimal.ONE) == 0) {
+//			return ONE;
+//		}
+//
+//		MathContext mc = new MathContext(mathContext.getPrecision() + 6, mathContext.getRoundingMode());
+//
+//        BigDecimal numerator = BigDecimal.ONE;
+//        BigDecimal pn2 = BigDecimal.ZERO;
+//        BigDecimal denominator = BigDecimal.ZERO;
+//        BigDecimal qn2 = BigDecimal.ONE;
+//        BigDecimal x = value;
+//
+//        do {
+//            BigDecimal a = x.setScale(0, RoundingMode.FLOOR);
+//
+//            BigDecimal aux = numerator;
+//            numerator = a.multiply(numerator).add(pn2);
+//
+//            pn2 = aux;
+//            aux = denominator;
+//            denominator = a.multiply(denominator).add(qn2);
+//
+//            BigDecimal rationalCandidate = numerator.divide(denominator, mathContext);
+////            left = value.abs().subtract(numeratorDivideDenominator.abs());
+//
+//
+//            qn2 = aux;
+//            BigDecimal xSubtractA = x.subtract(a);
+//            if (xSubtractA.compareTo(BigDecimal.ZERO) == 0) {
+//                break;
+//            }
+//            x = BigDecimal.ONE.divide(xSubtractA, mc);
+//        } while (true);
+//
+//        return new BigRational(numerator, denominator);
+//    }
+
+//	/** The default epsilon used for convergence. */
+//	public static final double DEFAULT_EPSILON = 1e-5;
+//
+//	/** The default iterations used for convergence. */
+//	private static final int DEFAULT_MAX_ITERATIONS = 100;
+//
+//	/** Message for non-finite input double argument to factory constructors. */
+//	private static final String NOT_FINITE = "Not finite: ";
+//
+//	/** The overflow limit for conversion from a double (2^31). */
+//	private static final long OVERFLOW = 1L << 31;
+//
+//	public static BigRational valueOf(final double value,
+//									  final double epsilon,
+//									  final int maxDenominator,
+//									  final int maxIterations) {
+//		if (!Double.isFinite(value)) {
+//			throw new IllegalArgumentException(NOT_FINITE + value);
+//		}
+//
+//		// Remove sign, this is restored at the end.
+//		// (Assumes the value is not zero and thus signum(value) is not zero).
+//		final double absValue = Math.abs(value);
+//		double r0 = absValue;
+//		long a0 = (long) Math.floor(r0);
+//		if (a0 > OVERFLOW) {
+//			throw new ArithmeticException("ERROR_CONVERSION_OVERFLOW, value, a0, 1");
+//		}
+//
+//		// check for (almost) integer arguments, which should not go to iterations.
+//		if (r0 - a0 <= epsilon) {
+//			int num = (int) a0;
+//			int den = 1;
+//			// Restore the sign.
+//			if (Math.signum(num) != Math.signum(value)) {
+//				if (num == Integer.MIN_VALUE) {
+//					den = -den;
+//				} else {
+//					num = -num;
+//				}
+//			}
+//			return new BigRational(BigDecimal.valueOf(num), BigDecimal.valueOf(den));
+//		}
+//
+//		// Support 2^31 as maximum denominator.
+//		// This is negative as an integer so convert to long.
+//		final long maxDen = Math.abs((long) maxDenominator);
+//
+//		long p0 = 1;
+//		long q0 = 0;
+//		long p1 = a0;
+//		long q1 = 1;
+//
+//		long p2;
+//		long q2;
+//
+//		int n = 0;
+//		boolean stop = false;
+//		do {
+//			++n;
+//			final double r1 = 1.0 / (r0 - a0);
+//			final long a1 = (long) Math.floor(r1);
+//			p2 = (a1 * p1) + p0;
+//			q2 = (a1 * q1) + q0;
+//
+//			if (Long.compareUnsigned(p2, OVERFLOW) > 0 ||
+//					Long.compareUnsigned(q2, OVERFLOW) > 0) {
+//				// In maxDenominator mode, fall-back to the previous valid fraction.
+//				if (epsilon == 0.0) {
+//					p2 = p1;
+//					q2 = q1;
+//					break;
+//				}
+//				throw new ArithmeticException("FractionException.ERROR_CONVERSION_OVERFLOW, value, p2, q2");
+//			}
+//
+//			final double convergent = (double) p2 / (double) q2;
+//			if (n < maxIterations &&
+//					Math.abs(convergent - absValue) > epsilon &&
+//					q2 < maxDen) {
+//				p0 = p1;
+//				p1 = p2;
+//				q0 = q1;
+//				q1 = q2;
+//				a0 = a1;
+//				r0 = r1;
+//			} else {
+//				stop = true;
+//			}
+//		} while (!stop);
+//
+//		if (n >= maxIterations) {
+//			throw new ArithmeticException("FractionException.ERROR_CONVERSION, value, maxIterations");
+//		}
+//
+//		// Use p2 / q2 or p1 / q1 if q2 has grown too large in maxDenominator mode
+//		// Note: Conversion of long 2^31 to an integer will create a negative. This could
+//		// be either the numerator or denominator. This is handled by restoring the sign.
+//		int num;
+//		int den;
+//		if (q2 <= maxDen) {
+//			num = (int) p2;
+//			den = (int) q2;
+//		} else {
+//			num = (int) p1;
+//			den = (int) q1;
+//		}
+//
+//		// Restore the sign.
+//		if (Math.signum(num) * Math.signum(den) != Math.signum(value)) {
+//			if (num == Integer.MIN_VALUE) {
+//				den = -den;
+//			} else {
+//				num = -num;
+//			}
+//		}
+//
+//		return new BigRational(BigDecimal.valueOf(num), BigDecimal.valueOf(den));
+//	}
+
+	public static final BigDecimal DEFAULT_EPSILON = BigDecimal.valueOf(1e-5);
+	private static final BigInteger DEFAULT_MAX_ITERATIONS = BigInteger.valueOf(100);
+	private static final String NOT_FINITE = "Not finite: ";
+	private static final BigInteger OVERFLOW = BigInteger.ONE.shiftLeft(127);
+
+	/*
+	 * Licensed to the Apache Software Foundation (ASF) under one or more
+	 * contributor license agreements.  See the NOTICE file distributed with
+	 * this work for additional information regarding copyright ownership.
+	 * The ASF licenses this file to You under the Apache License, Version 2.0
+	 * (the "License"); you may not use this file except in compliance with
+	 * the License.  You may obtain a copy of the License at
+	 *
+	 *      http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	/**
+     * Create a fraction given the double value and either the maximum error
+     * allowed or the maximum number of denominator digits.
+     *
+	 * <p>
+     * The code was taken from the <a href="https://commons.apache.org/proper/commons-numbers/commons-numbers-docs/jacoco-aggregate/commons-numbers-fraction/org.apache.commons.numbers.fraction/Fraction.java.html">Fraction.java</a>
+     * </p>
+	 *
+     * <p>
+     * NOTE: This constructor is called with:
+     * <ul>
+     *  <li>EITHER a valid epsilon value and the maxDenominator
+     *  <li>OR a valid maxDenominator value and the epsilon value set to
+     *      zero (that way epsilon only has effect if there is an exact
+     *      match before the maxDenominator value is reached).
+     * </ul>
+     * <p>
+     * It has been done this way so that the same code can be reused for
+     * both scenarios. However this could be confusing to users if it
+     * were part of the public API and this method should therefore remain
+     * PRIVATE.
+     * </p>
+     *
+     * <p>
+     * Warning: This conversion assumes the value is not zero.
+     * </p>
+     *
+     * @param value Value to convert to a fraction. Must not be zero.
+     * @param epsilon Maximum error allowed.
+     * The resulting fraction is within {@code epsilon} of {@code value},
+     * in absolute terms.
+     * @param maxDenominator Maximum denominator value allowed.
+     * @param maxIterations Maximum number of convergents.
+     * @param mathContext the {@link MathContext} used for the calculation.
+     * @throws IllegalArgumentException if the given {@code value} is NaN or infinite.
+     * @throws ArithmeticException if the continued fraction failed to converge.
+     */
+	public static BigRational valueOf(BigDecimal value,
+									  BigDecimal epsilon,
+									  BigInteger maxDenominator,
+									  int maxIterations,
+									  MathContext mathContext) {
+		if (value.compareTo(BigDecimal.ZERO) == 0) {
+			return ZERO;
+		}
+		if (maxIterations < 1) {
+			throw new IllegalArgumentException("Max iterations must be strictly positive: " + maxIterations);
+		}
+//		if (epsilon.compareTo(BigDecimal.ONE) >= 0) {
+//			return new BigRational(value, epsilon, BigInteger.MIN_VALUE, maxIterations, mathContext);
+//		}
+//		throw new IllegalArgumentException("Epsilon must be positive: " + maxIterations);
+
+		if (value.scale() == Integer.MAX_VALUE) {
+			throw new IllegalArgumentException(NOT_FINITE + value);
+		}
+
+		BigDecimal absValue = value.abs();
+		BigDecimal r0 = absValue;
+		BigInteger a0 = r0.toBigInteger();
+
+		if (a0.compareTo(OVERFLOW) > 0) {
+			throw new IllegalArgumentException("ERROR_CONVERSION_OVERFLOW, value, a0, 1");
+		}
+
+		if (r0.subtract(new BigDecimal(a0)).compareTo(epsilon) <= 0) {
+            BigInteger den = BigInteger.ONE;
+			return new BigRational(new BigDecimal(a0), new BigDecimal(den));
+		}
+
+		BigInteger maxDen = maxDenominator.abs();
+		BigInteger p0 = BigInteger.ONE;
+		BigInteger q0 = BigInteger.ZERO;
+		BigInteger p1 = a0;
+		BigInteger q1 = BigInteger.ONE;
+
+		BigInteger p2;
+		BigInteger q2;
+		int n = 0;
+		boolean stop = false;
+
+		do {
+			n = n + 1;
+			BigDecimal r1 = BigDecimal.ONE.divide(r0.subtract(new BigDecimal(a0)), mathContext);
+			BigInteger a1 = r1.toBigInteger();
+			p2 = a1.multiply(p1).add(p0);
+			q2 = a1.multiply(q1).add(q0);
+
+			if (p2.compareTo(OVERFLOW) > 0 || q2.compareTo(OVERFLOW) > 0) {
+				if (epsilon.compareTo(BigDecimal.ZERO) == 0) {
+					p2 = p1;
+					q2 = q1;
+					break;
+				}
+				throw new RuntimeException("FractionException.ERROR_CONVERSION_OVERFLOW, value, p2, q2");
+			}
+
+			BigDecimal convergent = new BigDecimal(p2).divide(new BigDecimal(q2), mathContext);
+			if (n < maxIterations && convergent.subtract(absValue).abs().compareTo(epsilon) > 0 && q2.compareTo(maxDen) < 0) {
+				p0 = p1;
+				p1 = p2;
+				q0 = q1;
+				q1 = q2;
+				a0 = a1;
+				r0 = r1;
+			} else {
+				stop = true;
+			}
+		} while (!stop);
+
+		if (n >= maxIterations) {
+			throw new RuntimeException("FractionException.ERROR_CONVERSION, value, maxIterations");
+		}
+
+		BigInteger num;
+		BigInteger den;
+		if (q2.compareTo(maxDen) <= 0) {
+			num = p2;
+			den = q2;
+		} else {
+			num = p1;
+			den = q1;
+		}
+
+		return new BigRational(new BigDecimal(num), new BigDecimal(den));
+	}
+
 	/**
 	 * Creates a rational number of the specified string representation.
 	 * 
